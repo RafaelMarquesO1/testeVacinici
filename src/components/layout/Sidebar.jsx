@@ -1,69 +1,79 @@
-// src/components/layout/Sidebar.jsx
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { BarChart3, Users, Syringe, Settings, LogOut, Sun, Moon, UsersRound } from "lucide-react"; 
-import '../../styles/Dashboard.css'; 
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom'; // Importe useNavigate
+import { RxDashboard } from "react-icons/rx";
+import { FiUsers, FiLogOut, FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
+import '../../styles/Dashboard.css';
 
-export default function Sidebar({ currentTheme, toggleTheme }) { 
+export default function Sidebar({ handleLogout }) { // Recebe a função de logout como prop
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme === 'dark' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  });
+
+  useEffect(() => {
+    document.body.classList.toggle('dark', isDarkMode);
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
+  const handleLinkClick = () => {
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  };
+
+  const toggleTheme = () => {
+    setIsDarkMode(prevMode => !prevMode);
+  };
+
   return (
-    <aside className="dashboard-sidebar">
-      <div className="sidebar-header">
-        <Syringe className="sidebar-logo-icon" />
-        <h1 className="sidebar-logo-text">Vacinici</h1>
-      </div>
-      <nav className="sidebar-nav">
-        <ul>
-          <li>
-            <NavLink 
-              to="/admin/dashboard" 
-              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-            >
-              <BarChart3 size={18} /> Dashboard
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/admin/users" 
-              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-            >
-              <Users size={18} /> Usuários
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/admin/vaccines"
-              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-            >
-              <Syringe size={18} /> Vacinas
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/admin/patients" // Link para a lista de pacientes
-              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-            >
-              <UsersRound size={18} /> Pacientes 
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
-      <div className="sidebar-footer">
-        <NavLink 
-          to="/admin/settings" 
-          className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-        >
-          <Settings size={18} /> Configurações
-        </NavLink>
-        
-        <button onClick={toggleTheme} className="nav-item theme-toggle-btn">
-          {currentTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          <span className="theme-toggle-text">{currentTheme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>
-        </button>
+    <>
+      <button 
+        className="mobile-menu-toggle"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        aria-label="Toggle menu"
+      >
+        {isMobileMenuOpen ? <FiX /> : <FiMenu />}
+      </button>
 
-        <a href="#" onClick={() => alert('Funcionalidade de Sair a ser implementada!')} className="nav-item">
-            <LogOut size={18} /> Sair
-        </a>
-      </div>
-    </aside>
+      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <div className="logo-wrapper">
+            <span className="sidebar-logo">{isCollapsed ? 'V' : 'Vacinici'}</span>
+          </div>
+          <button className="collapse-btn" onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Collapse menu">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 19L8 12L15 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <nav className="sidebar-nav">
+          <NavLink to="/admin/dashboard" className="nav-link" onClick={handleLinkClick}>
+            <RxDashboard className="nav-icon" />
+            <span className="nav-text">Dashboard</span>
+          </NavLink>
+          <NavLink to="/admin/usuarios" className="nav-link" onClick={handleLinkClick}>
+            <FiUsers className="nav-icon" />
+            <span className="nav-text">Usuários</span>
+          </NavLink>
+        </nav>
+        
+        <div className="sidebar-footer">
+           <button onClick={toggleTheme} className="nav-link theme-toggle-btn" aria-label="Alternar tema">
+              {isDarkMode ? <FiSun className="nav-icon" /> : <FiMoon className="nav-icon" />}
+              <span className="nav-text">{isDarkMode ? 'Modo Claro' : 'Modo Escuro'}</span>
+           </button>
+           
+           {/* Botão de Sair agora usa a função handleLogout */}
+           <button onClick={handleLogout} className="nav-link logout-btn">
+            <FiLogOut className="nav-icon" />
+            <span className="nav-text">Sair</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
