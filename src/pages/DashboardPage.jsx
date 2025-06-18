@@ -18,61 +18,83 @@ const StatCard = ({ icon, title, value, change, delay }) => (
 
 // Componente principal da página do Dashboard
 export default function DashboardPage() {
+  const stats = [
+    {
+      icon: <FiUsers />,
+      title: "Total de Pacientes",
+      value: "1,482",
+      change: { type: "positive", value: "+12 na última semana" },
+      delay: "100ms"
+    },
+    {
+      icon: <FaSyringe />,
+      title: "Vacinas Aplicadas (Mês)",
+      value: "897",
+      change: { type: "positive", value: "+5.2% vs. mês anterior" },
+      delay: "200ms"
+    },
+    {
+      icon: <FiPlusCircle />,
+      title: "Novos Cadastros (Hoje)",
+      value: "8",
+      delay: "300ms"
+    },
+    {
+      icon: <FaChartLine />,
+      title: "Cobertura BCG (Infantil)",
+      value: "92.5%",
+      change: { type: "negative", value: "-0.5% da meta nacional" },
+      delay: "400ms"
+    }
+  ];
+
+  const activities = [
+    {
+      desc: <>Nova vacina de <strong>Febre Amarela</strong> aplicada em <strong>João Silva</strong>.</>,
+      time: "2 min atrás"
+    },
+    {
+      desc: <>Novo paciente <strong>Maria Oliveira</strong> cadastrado por <strong>Dr(a). Ana</strong>.</>,
+      time: "15 min atrás"
+    },
+    {
+      desc: <>Dados do paciente <strong>Carlos Pereira</strong> atualizados.</>,
+      time: "1 hora atrás"
+    },
+    {
+      desc: <>Relatório de cobertura vacinal gerado.</>,
+      time: "3 horas atrás"
+    }
+  ];
+
   return (
     <div className="dashboard-page">
       <h1 className="page-title animated-title">Painel de Controle</h1>
       
       {/* Grid com os 4 cartões de estatísticas */}
       <div className="stats-grid">
-        <StatCard 
-          icon={<FiUsers />} 
-          title="Total de Pacientes" 
-          value="1,482" 
-          change={{type: 'positive', value: '+12 na última semana'}} 
-          delay="100ms"
-        />
-        <StatCard 
-          icon={<FaSyringe />} 
-          title="Vacinas Aplicadas (Mês)" 
-          value="897" 
-          change={{type: 'positive', value: '+5.2% vs. mês anterior'}} 
-          delay="200ms"
-        />
-        <StatCard 
-          icon={<FiPlusCircle />} 
-          title="Novos Cadastros (Hoje)" 
-          value="8" 
-          delay="300ms"
-        />
-        <StatCard 
-          icon={<FaChartLine />} 
-          title="Cobertura BCG (Infantil)" 
-          value="92.5%" 
-          change={{type: 'negative', value: '-0.5% da meta nacional'}} 
-          delay="400ms"
-        />
+        {stats.map((stat, index) => (
+          <StatCard 
+            key={index}
+            icon={stat.icon} 
+            title={stat.title} 
+            value={stat.value} 
+            change={stat.change} 
+            delay={stat.delay}
+          />
+        ))}
       </div>
 
       {/* Card com a lista de atividades recentes */}
       <div className="recent-activity-card animated-card" style={{ animationDelay: '500ms' }}>
         <h2>Atividade Recente</h2>
         <ul className="activity-list">
-            <li className="activity-item">
-                <span className="activity-desc">Nova vacina de <strong>Febre Amarela</strong> aplicada em <strong>João Silva</strong>.</span>
-                <span className="activity-time">2 min atrás</span>
-            </li>
-            <li className="activity-item">
-                <span className="activity-desc">Novo paciente <strong>Maria Oliveira</strong> cadastrado por <strong>Dr(a). Ana</strong>.</span>
-                <span className="activity-time">15 min atrás</span>
-            </li>
-            <li className="activity-item">
-                <span className="activity-desc">Dados do paciente <strong>Carlos Pereira</strong> atualizados.</span>
-                <span className="activity-time">1 hora atrás</span>
-            </li>
-             <li className="activity-item">
-                <span className="activity-desc">Relatório de cobertura vacinal gerado.</span>
-                <span className="activity-time">3 horas atrás</span>
-            </li>
+            {activities.map((activity, index) => (
+              <li key={index} className="activity-item">
+                <span className="activity-desc">{activity.desc}</span>
+                <span className="activity-time">{activity.time}</span>
+              </li>
+            ))}
         </ul>
       </div>
     </div>
