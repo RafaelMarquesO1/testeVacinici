@@ -27,10 +27,10 @@ export default function DashboardPage() {
       delay: "100ms"
     },
     {
-      icon: <FaSyringe />,
-      title: "Vacinas Aplicadas (Mês)",
-      value: "897",
-      change: { type: "positive", value: "+5.2% vs. mês anterior" },
+      icon: <FiUsers />,
+      title: "Total de Funcionários",
+      value: "24",
+      change: { type: "positive", value: "+2 no último mês" },
       delay: "200ms"
     },
     {
@@ -40,17 +40,17 @@ export default function DashboardPage() {
       delay: "300ms"
     },
     {
-      icon: <FaChartLine />,
-      title: "Cobertura BCG (Infantil)",
-      value: "92.5%",
-      change: { type: "negative", value: "-0.5% da meta nacional" },
+      icon: <FiUsers />,
+      title: "Usuários Ativos",
+      value: "1,506",
+      change: { type: "positive", value: "+98.5% de taxa de atividade" },
       delay: "400ms"
     }
   ];
 
   const activities = [
     {
-      desc: <>Nova vacina de <strong>Febre Amarela</strong> aplicada em <strong>João Silva</strong>.</>,
+      desc: <>Novo usuário <strong>João Silva</strong> cadastrado.</>,
       time: "2 min atrás"
     },
     {
@@ -58,18 +58,18 @@ export default function DashboardPage() {
       time: "15 min atrás"
     },
     {
-      desc: <>Dados do paciente <strong>Carlos Pereira</strong> atualizados.</>,
+      desc: <>Dados do usuário <strong>Carlos Pereira</strong> atualizados.</>,
       time: "1 hora atrás"
     },
     {
-      desc: <>Relatório de cobertura vacinal gerado.</>,
+      desc: <>Relatório de usuários ativos gerado.</>,
       time: "3 horas atrás"
     }
   ];
 
   return (
     <div className="dashboard-page">
-      <h1 className="page-title animated-title">Painel de Controle</h1>
+      <h1 className="page-title animated-title">Gerenciamento de Usuários</h1>
       
       {/* Grid com os 4 cartões de estatísticas */}
       <div className="stats-grid">

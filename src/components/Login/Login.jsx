@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Ícones do MUI
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
@@ -11,20 +12,22 @@ import vaciniilus from '../../assets/vaciniilus.png';
 
 export default function Login() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const validations = [
     { regex: /.{8,10}/, label: '8 a 10 caracteres' }
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (username.trim() === '' || password.trim() === '') {
-      setError('Por favor, preencha o usuário e a senha para continuar.');
+    if (email.trim() === '' || password.trim() === '') {
+      setError('Por favor, preencha o email e a senha para continuar.');
       return;
     }
 
@@ -35,8 +38,16 @@ export default function Login() {
     }
 
     setError('');
-    console.log('Login válido! Redirecionando...');
-    window.location.href = '/Enter';
+    setLoading(true);
+    
+    try {
+      await login(email, password);
+      navigate('/admin/dashboard');
+    } catch (err) {
+      setError('Credenciais inválidas. Por favor, tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -54,17 +65,17 @@ export default function Login() {
 
         {/* Seção de Login */}
         <div className="col-md-6 d-flex flex-column login-title">
-          <h2 className="fw-bold">Seja bem-vindo de volta!</h2>
-          <p className="frase4"><strong>Preencha seus dados pessoais.</strong></p>
+          <h2 className="fw-bold">Gerenciamento de Usuários</h2>
+          <p className="frase4"><strong>Acesso restrito para administradores.</strong></p>
 
           <form onSubmit={handleSubmit}>
             <div className="form-input mb-3">
               <input
-                type="text"
+                type="email"
                 className="form-control"
-                placeholder="Usuário"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -96,7 +107,13 @@ export default function Login() {
               ))}
             </div>
 
-            <button type="submit" className="btn btn-dark w-100 btn-login mt-2">Entrar</button>
+            <button 
+              type="submit" 
+              className="btn btn-dark w-100 btn-login mt-2" 
+              disabled={loading}
+            >
+              {loading ? 'Entrando...' : 'Entrar'}
+            </button>
           </form>
         </div>
 

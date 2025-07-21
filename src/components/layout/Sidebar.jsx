@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom'; // Importe useNavigate
+import { NavLink } from 'react-router-dom';
 import { RxDashboard } from "react-icons/rx";
-import { FiUsers, FiLogOut, FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
+import { FiUsers, FiLogOut, FiMenu, FiX, FiSun, FiMoon, FiCalendar, FiList, FiMapPin } from "react-icons/fi";
+import { FaSyringe } from "react-icons/fa";
 import '../../styles/Dashboard.css';
 
 export default function Sidebar({ handleLogout }) { // Recebe a função de logout como prop

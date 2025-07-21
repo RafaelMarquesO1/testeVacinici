@@ -1,5 +1,6 @@
-import React, { useState } from "react"; // Importe useState
-import { BrowserRouter, Route, Routes, Navigate, NavLink, useNavigate } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Seus componentes e páginas
 import Navbar from "./components/Navbar/Navbar";
@@ -10,7 +11,7 @@ import Login from "./components/Login/Login";
 import DashboardLayout from "./components/layout/DashboardLayout"; 
 import ProtectedRoute from "./components/ProtectedRoute"; 
 import DashboardPage from "./pages/DashboardPage"; 
-import UsersPage from "./pages/UsersPage"; 
+import UsersPage from "./pages/UsersPage";
 
 const PublicLayout = ({ children }) => (
   <div>
@@ -21,35 +22,22 @@ const PublicLayout = ({ children }) => (
 );
 
 function App() {
-  // Lógica de Autenticação com Estado
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Começa como logado para teste
-
-  // Função de Login
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
-  // Função de Logout
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    // Em um app real, você também limparia tokens, etc.
-  };
-
   return (
-    <BrowserRouter>
-      <Routes>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
         
         {/* Rotas Públicas */}
         <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
         <Route path="/politica" element={<PublicLayout><Politica /></PublicLayout>} />
-        <Route path="/entrar" element={<Login onLogin={handleLogin} />} />
+        <Route path="/entrar" element={<Login />} />
 
         {/* Rotas da Área Administrativa */}
         <Route 
           path="/admin" 
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <DashboardLayout handleLogout={handleLogout} /> 
+            <ProtectedRoute>
+              <DashboardLayout /> 
             </ProtectedRoute>
           }
         >
@@ -62,7 +50,8 @@ function App() {
         <Route path='/Enter' element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="*" element={ <PublicLayout> <div>Página Não Encontrada</div> </PublicLayout> } />
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

@@ -1,0 +1,333 @@
+/* Estilos para os cards de vacinas */
+.vacinas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.vacina-card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.vacina-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.vacina-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.vacina-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.vacina-badge {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.vacina-badge.obrigatória {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.vacina-badge.opcional {
+  background-color: #e1f5fe;
+  color: #0277bd;
+}
+
+.vacina-badge.sazonal {
+  background-color: #fff9c4;
+  color: #f57f17;
+}
+
+.vacina-name {
+  font-size: 1.2rem;
+  margin: 0 0 5px 0;
+}
+
+.vacina-manufacturer {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin: 0 0 15px 0;
+}
+
+.vacina-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vacina-doses {
+  font-size: 0.9rem;
+  background-color: #f9fafb;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Estilos para o modal de detalhes da vacina */
+.vacina-details-content {
+  padding: 15px 0;
+}
+
+.vacina-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.vacina-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Estilos para os cards de locais */
+.locais-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.local-card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.local-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.local-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.local-icon {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.local-type {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: #f9fafb;
+  color: var(--color-text-primary);
+}
+
+.local-name {
+  font-size: 1.2rem;
+  margin: 0 0 5px 0;
+}
+
+.local-address, .local-city {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin: 0 0 5px 0;
+}
+
+.local-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.local-phone {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+/* Estilos para os badges de status */
+.status-badge {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.status-badge.status-agendado {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.status-concluido {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-badge.status-cancelado {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Estilos para os filtros de tabs */
+.filter-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.filter-tab {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background-color: #f9fafb;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-tab.active {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* Estilos para os modais de detalhes */
+.info-group {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.info-icon {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.info-section {
+  margin-bottom: 20px;
+}
+
+.info-section h4 {
+  margin-bottom: 10px;
+  color: var(--color-primary);
+}
+
+/* Botões de edição pequenos */
+.btn-edit-small {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  background-color: #e0f2f1;
+  color: var(--color-primary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-edit-small:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* Estilos para botões de sucesso e perigo */
+.btn-success {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-success:hover {
+  background-color: #219653;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+/* Estilos para modais maiores */
+.modal-lg {
+  max-width: 900px;
+}
+
+/* Estilos para o tema escuro */
+body.dark .vacina-doses,
+body.dark .local-type,
+body.dark .filter-tab {
+  background-color: #374151;
+}
+
+body.dark .btn-edit-small {
+  background-color: #064e3b;
+  color: #a7f3d0;
+}
+
+body.dark .btn-edit-small:hover {
+  background-color: #047857;
+  color: white;
+}
+
+body.dark .status-badge.status-agendado {
+  background-color: #064e3b;
+  color: #a7f3d0;
+}
+
+body.dark .status-badge.status-concluido {
+  background-color: #0c4a6e;
+  color: #bae6fd;
+}
+
+body.dark .status-badge.status-cancelado {
+  background-color: #7f1d1d;
+  color: #fecaca;
+}
+
+body.dark .vacina-badge.obrigatória {
+  background-color: #7f1d1d;
+  color: #fecaca;
+}
+
+body.dark .vacina-badge.opcional {
+  background-color: #0c4a6e;
+  color: #bae6fd;
+}
+
+body.dark .vacina-badge.sazonal {
+  background-color: #713f12;
+  color: #fef3c7;
+}
