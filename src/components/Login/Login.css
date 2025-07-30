@@ -1,7 +1,7 @@
 /* Tela inteira da página de login */
 .login-page {
   height: 100vh;
-  background-image: url(C:\Users\3mand\teste\src\assets\mesh-693.png);
+  background-image: url('../../assets/mesh-693.png');
   display: flex;
   align-items: center;
   justify-content: center;

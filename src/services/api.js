@@ -289,141 +289,258 @@ const mockData = {
 // Funções de API simuladas
 export const api = {
   // Usuários
-  getUsuarios: () => {
-    return Promise.resolve(mockData.usuarios);
+  getUsuarios: async () => {
+    const res = await fetch('http://localhost:3001/api/usuarios');
+    return res.json();
   },
-  
-  getUsuarioById: (id) => {
-    const usuario = mockData.usuarios.find(u => u.id === parseInt(id));
-    return Promise.resolve(usuario || null);
+  getUsuarioById: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/usuarios/${id}`);
+    return res.json();
   },
-  
-  getPacientes: () => {
-    return Promise.resolve(mockData.usuarios.filter(u => u.tipo_usuario === 'Paciente'));
+  createUsuario: async (usuario) => {
+    const res = await fetch('http://localhost:3001/api/usuarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(usuario)
+    });
+    return res.json();
   },
-  
-  getFuncionarios: () => {
-    return Promise.resolve(mockData.usuarios.filter(u => u.tipo_usuario === 'Funcionario'));
+  updateUsuario: async (id, usuario) => {
+    const res = await fetch(`http://localhost:3001/api/usuarios/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(usuario)
+    });
+    return res.json();
   },
-  
-  createUsuario: (usuario) => {
-    const newId = Math.max(...mockData.usuarios.map(u => u.id)) + 1;
-    const newUsuario = { ...usuario, id: newId, data_cadastro: new Date().toISOString().split('T')[0] };
-    mockData.usuarios.push(newUsuario);
-    return Promise.resolve(newUsuario);
+  deleteUsuario: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/usuarios/${id}`, { method: 'DELETE' });
+    return res.json();
   },
-  
-  updateUsuario: (id, usuario) => {
-    const index = mockData.usuarios.findIndex(u => u.id === parseInt(id));
-    if (index !== -1) {
-      mockData.usuarios[index] = { ...mockData.usuarios[index], ...usuario };
-      return Promise.resolve(mockData.usuarios[index]);
-    }
-    return Promise.reject(new Error('Usuário não encontrado'));
-  },
-  
-  deleteUsuario: (id) => {
-    const index = mockData.usuarios.findIndex(u => u.id === parseInt(id));
-    if (index !== -1) {
-      mockData.usuarios.splice(index, 1);
-      return Promise.resolve({ success: true });
-    }
-    return Promise.reject(new Error('Usuário não encontrado'));
-  },
-  
+
   // Vacinas
-  getVacinas: () => {
-    return Promise.resolve(mockData.vacinas);
+  getVacinas: async () => {
+    const res = await fetch('http://localhost:3001/api/vacinas');
+    return res.json();
   },
-  
-  getVacinaById: (id) => {
-    const vacina = mockData.vacinas.find(v => v.id === parseInt(id));
-    return Promise.resolve(vacina || null);
+  getVacinaById: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/vacinas/${id}`);
+    return res.json();
   },
-  
+  createVacina: async (vacina) => {
+    const res = await fetch('http://localhost:3001/api/vacinas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(vacina)
+    });
+    return res.json();
+  },
+  updateVacina: async (id, vacina) => {
+    const res = await fetch(`http://localhost:3001/api/vacinas/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(vacina)
+    });
+    return res.json();
+  },
+  deleteVacina: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/vacinas/${id}`, { method: 'DELETE' });
+    return res.json();
+  },
+
   // Locais de Vacinação
-  getLocaisVacinacao: () => {
-    return Promise.resolve(mockData.locais_vacinacao);
+  getLocaisVacinacao: async () => {
+    const res = await fetch('http://localhost:3001/api/locais');
+    return res.json();
   },
-  
-  // Histórico de Vacinação
-  getHistoricoVacinacao: (pacienteId) => {
-    if (pacienteId) {
-      return Promise.resolve(mockData.historico_vacinacao.filter(h => h.paciente_id === parseInt(pacienteId)));
-    }
-    return Promise.resolve(mockData.historico_vacinacao);
+  getLocalById: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/locais/${id}`);
+    return res.json();
   },
-  
-  addVacinacao: (vacinacao) => {
-    const newId = Math.max(...mockData.historico_vacinacao.map(h => h.id)) + 1;
-    const newVacinacao = { ...vacinacao, id: newId };
-    mockData.historico_vacinacao.push(newVacinacao);
-    return Promise.resolve(newVacinacao);
+  createLocal: async (local) => {
+    const res = await fetch('http://localhost:3001/api/locais', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(local)
+    });
+    return res.json();
   },
-  
+  updateLocal: async (id, local) => {
+    const res = await fetch(`http://localhost:3001/api/locais/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(local)
+    });
+    return res.json();
+  },
+  deleteLocal: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/locais/${id}`, { method: 'DELETE' });
+    return res.json();
+  },
+
   // Agendamentos
-  getAgendamentos: (pacienteId) => {
-    if (pacienteId) {
-      return Promise.resolve(mockData.agendamentos.filter(a => a.paciente_id === parseInt(pacienteId)));
+  getAgendamentos: async () => {
+    const res = await fetch('http://localhost:3001/api/agendamentos');
+    return res.json();
+  },
+  getAgendamentoById: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/agendamentos/${id}`);
+    return res.json();
+  },
+  createAgendamento: async (agendamento) => {
+    const res = await fetch('http://localhost:3001/api/agendamentos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(agendamento)
+    });
+    return res.json();
+  },
+  updateAgendamento: async (id, agendamento) => {
+    const res = await fetch(`http://localhost:3001/api/agendamentos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(agendamento)
+    });
+    return res.json();
+  },
+  deleteAgendamento: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/agendamentos/${id}`, { method: 'DELETE' });
+    return res.json();
+  },
+
+  // Feedback
+  getFeedbacks: async () => {
+    const res = await fetch('http://localhost:3001/api/feedback');
+    return res.json();
+  },
+  getFeedbackById: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/feedback/${id}`);
+    return res.json();
+  },
+  createFeedback: async (feedback) => {
+    const res = await fetch('http://localhost:3001/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(feedback)
+    });
+    return res.json();
+  },
+  updateFeedback: async (id, feedback) => {
+    const res = await fetch(`http://localhost:3001/api/feedback/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(feedback)
+    });
+    return res.json();
+  },
+  deleteFeedback: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/feedback/${id}`, { method: 'DELETE' });
+    return res.json();
+  },
+
+  // Notícias
+  getNoticias: async () => {
+    const res = await fetch('http://localhost:3001/api/noticias');
+    return res.json();
+  },
+  getNoticiaById: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/noticias/${id}`);
+    return res.json();
+  },
+  createNoticia: async (noticia) => {
+    const res = await fetch('http://localhost:3001/api/noticias', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(noticia)
+    });
+    return res.json();
+  },
+  updateNoticia: async (id, noticia) => {
+    const res = await fetch(`http://localhost:3001/api/noticias/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(noticia)
+    });
+    return res.json();
+  },
+  deleteNoticia: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/noticias/${id}`, { method: 'DELETE' });
+    return res.json();
+  },
+
+  // Logs
+  getLogs: async () => {
+    const res = await fetch('http://localhost:3001/api/logs');
+    return res.json();
+  },
+  getLogById: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/logs/${id}`);
+    return res.json();
+  },
+  createLog: async (log) => {
+    const res = await fetch('http://localhost:3001/api/logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(log)
+    });
+    return res.json();
+  },
+  updateLog: async (id, log) => {
+    const res = await fetch(`http://localhost:3001/api/logs/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(log)
+    });
+    return res.json();
+  },
+  deleteLog: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/logs/${id}`, { method: 'DELETE' });
+    return res.json();
+  },
+
+  // Histórico de Vacinação
+  getHistoricoVacinacao: async (paciente_id) => {
+    let url = 'http://localhost:3001/api/historico';
+    if (paciente_id) url += `?paciente_id=${paciente_id}`;
+    const res = await fetch(url);
+    return res.json();
+  },
+  getHistoricoById: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/historico/${id}`);
+    return res.json();
+  },
+  createHistorico: async (registro) => {
+    const res = await fetch('http://localhost:3001/api/historico', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(registro)
+    });
+    return res.json();
+  },
+  updateHistorico: async (id, registro) => {
+    const res = await fetch(`http://localhost:3001/api/historico/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(registro)
+    });
+    return res.json();
+  },
+  deleteHistorico: async (id) => {
+    const res = await fetch(`http://localhost:3001/api/historico/${id}`, { method: 'DELETE' });
+    return res.json();
+  },
+
+  // Login (já adaptado)
+  login: async (email, senha) => {
+    const response = await fetch('http://localhost:3001/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, senha })
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Credenciais inválidas');
     }
-    return Promise.resolve(mockData.agendamentos);
-  },
-  
-  createAgendamento: (agendamento) => {
-    const newId = Math.max(...mockData.agendamentos.map(a => a.id)) + 1;
-    const newAgendamento = { ...agendamento, id: newId, notificacao_enviada: false };
-    mockData.agendamentos.push(newAgendamento);
-    return Promise.resolve(newAgendamento);
-  },
-  
-  updateAgendamento: (id, agendamento) => {
-    const index = mockData.agendamentos.findIndex(a => a.id === parseInt(id));
-    if (index !== -1) {
-      mockData.agendamentos[index] = { ...mockData.agendamentos[index], ...agendamento };
-      return Promise.resolve(mockData.agendamentos[index]);
-    }
-    return Promise.reject(new Error('Agendamento não encontrado'));
-  },
-  
-  // Dependentes
-  getDependentes: (responsavelId) => {
-    if (responsavelId) {
-      return Promise.resolve(mockData.dependentes.filter(d => d.responsavel_id === parseInt(responsavelId)));
-    }
-    return Promise.resolve(mockData.dependentes);
-  },
-  
-  // Histórico de Vacinação de Dependentes
-  getHistoricoVacinacaoDependente: (dependenteId) => {
-    if (dependenteId) {
-      return Promise.resolve(mockData.historico_vacinacao_dependentes.filter(h => h.dependente_id === parseInt(dependenteId)));
-    }
-    return Promise.resolve(mockData.historico_vacinacao_dependentes);
-  },
-  
-  // Estatísticas
-  getEstatisticas: () => {
-    return Promise.resolve(mockData.estatisticas_vacinacao);
-  },
-  
-  // Autenticação simulada
-  login: (email, senha) => {
-    const usuario = mockData.usuarios.find(u => u.email === email);
-    if (usuario) {
-      // Simulando verificação de senha (em um sistema real, seria feito com hash)
-      return Promise.resolve({
-        success: true,
-        user: {
-          id: usuario.id,
-          nome: usuario.nome_completo,
-          email: usuario.email,
-          tipo: usuario.tipo_usuario,
-          cargo: usuario.cargo,
-          foto: usuario.foto_perfil
-        },
-        token: 'token-simulado-' + Math.random().toString(36).substring(2)
-      });
-    }
-    return Promise.reject(new Error('Credenciais inválidas'));
+    return data;
   }
 };
