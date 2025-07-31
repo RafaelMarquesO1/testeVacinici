@@ -1,72 +1,94 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const db = require('./db');
+const { executeQuery } = require('./db');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Rotas CRUD (exemplo para usuários)
-app.get('/api/usuarios', (req, res) => {
-  db.query('SELECT * FROM usuarios', (err, results) => {
-    if (err) return res.status(500).json({ error: err });
+app.get('/api/usuarios', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM usuarios');
     res.json(results);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.get('/api/usuarios/:id', (req, res) => {
-  db.query('SELECT * FROM usuarios WHERE id = ?', [req.params.id], (err, results) => {
-    if (err) return res.status(500).json({ error: err });
+app.get('/api/usuarios/:id', async (req, res) => {
+  try {
+    const results = await executeQuery('SELECT * FROM usuarios WHERE id = @param1', [req.params.id]);
     if (results.length === 0) return res.status(404).json({ error: 'Usuário não encontrado' });
     res.json(results[0]);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.post('/api/usuarios', (req, res) => {
-  const { nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil } = req.body;
-  db.query(
-    'INSERT INTO usuarios (nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: err });
-      res.json({ id: result.insertId, ...req.body });
-    }
-  );
+app.post('/api/usuarios', async (req, res) => {
+  try {
+    const { nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil } = req.body;
+    const result = await executeQuery(
+      'INSERT INTO usuarios (nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil) OUTPUT INSERTED.id VALUES (@param1, @param2, @param3, @param4, @param5, @param6, @param7, @param8, @param9)',
+      [nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil]
+    );
+    res.json({ id: result[0].id, ...req.body });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.put('/api/usuarios/:id', (req, res) => {
-  const { nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil } = req.body;
-  db.query(
-    'UPDATE usuarios SET nome_completo=?, email=?, telefone=?, cpf=?, data_nascimento=?, genero=?, tipo_usuario=?, cargo=?, foto_perfil=? WHERE id=?',
-    [nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil, req.params.id],
-    (err) => {
-      if (err) return res.status(500).json({ error: err });
-      res.json({ id: req.params.id, ...req.body });
-    }
-  );
+app.put('/api/usuarios/:id', async (req, res) => {
+  try {
+    const { nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil } = req.body;
+    await executeQuery(
+      'UPDATE usuarios SET nome_completo=@param1, email=@param2, telefone=@param3, cpf=@param4, data_nascimento=@param5, genero=@param6, tipo_usuario=@param7, cargo=@param8, foto_perfil=@param9 WHERE id=@param10',
+      [nome_completo, email, telefone, cpf, data_nascimento, genero, tipo_usuario, cargo, foto_perfil, req.params.id]
+    );
+    res.json({ id: req.params.id, ...req.body });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.delete('/api/usuarios/:id', (req, res) => {
-  db.query('DELETE FROM usuarios WHERE id = ?', [req.params.id], (err) => {
-    if (err) return res.status(500).json({ error: err });
+app.delete('/api/usuarios/:id', async (req, res) => {
+  try {
+    await executeQuery('DELETE FROM usuarios WHERE id = @param1', [req.params.id]);
     res.json({ deleted: true });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Endpoint de login
-app.post('/api/login', (req, res) => {
-  const { email, senha } = req.body;
-  if (!email || !senha) {
-    return res.status(400).json({ success: false, message: 'Email e senha são obrigatórios.' });
-  }
-  db.query('SELECT u.*, c.senha_hash FROM usuarios u JOIN credenciais c ON u.id = c.usuario_id WHERE u.email = ?', [email], (err, results) => {
-    if (err) return res.status(500).json({ success: false, message: 'Erro no servidor.' });
-    if (results.length === 0) return res.status(401).json({ success: false, message: 'Credenciais inválidas.' });
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+    if (!email || !senha) {
+      return res.status(400).json({ success: false, message: 'Email e senha são obrigatórios.' });
+    }
+    
+    const results = await executeQuery(
+      'SELECT u.*, c.senha_hash FROM usuarios u JOIN credenciais c ON u.id = c.usuario_id WHERE u.email = @param1',
+      [email]
+    );
+    
+    if (results.length === 0) {
+      return res.status(401).json({ success: false, message: 'Credenciais inválidas.' });
+    }
+    
     const user = results[0];
     // Simulação: senha em texto puro (ajuste para hash em produção)
-    if (senha !== user.senha_hash) return res.status(401).json({ success: false, message: 'Credenciais inválidas.' });
-    if (user.cargo !== 'Administrador') return res.status(403).json({ success: false, message: 'Acesso restrito apenas para administradores.' });
+    if (senha !== user.senha_hash) {
+      return res.status(401).json({ success: false, message: 'Credenciais inválidas.' });
+    }
+    
+    if (user.cargo !== 'Administrador') {
+      return res.status(403).json({ success: false, message: 'Acesso restrito apenas para administradores.' });
+    }
+    
     // Geração de token simples (substitua por JWT em produção)
     const token = 'token-' + Math.random().toString(36).substring(2);
     res.json({
@@ -81,7 +103,9 @@ app.post('/api/login', (req, res) => {
       },
       token
     });
-  });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Erro no servidor.' });
+  }
 });
 
 app.use('/api/vacinas', require('./routes/vacinas'));
