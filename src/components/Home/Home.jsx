@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./Home.css";
 import Imagem from "../../assets/sla.png"; // Imagem principal do aplicativo
 import VideoSrc from "../../assets/video.mp4"; // Vídeo explicativo
+import { Box, Typography, Grid, Card, CardContent, CardHeader, Avatar, Paper } from "@mui/material";
 
 // Recharts
 import {
@@ -28,6 +29,33 @@ const Home = () => {
     { year: 2010, semVacinas: 5.4, comVacinas: 3.3 },
     { year: 2015, semVacinas: 4.6, comVacinas: 2.6 },
     { year: 2020, semVacinas: 4.0, comVacinas: 2.0 },
+  ];
+
+  const testimonials = [
+    {
+      nome: "Cátia",
+      texto: "Esse app facilitou muito o meu acesso à minha carteira de vacinação.",
+      imagem: "src/assets/catia.png",
+      titulo: "Incrível!"
+    },
+    {
+      nome: "John",
+      texto: "O design é intuitivo e me avisa automaticamente sobre vacinas.",
+      imagem: "src/assets/john.png",
+      titulo: "Excelente!"
+    },
+    {
+      nome: "Ricardo",
+      texto: "O app mantém minhas vacinas organizadas e acessíveis.",
+      imagem: "src/assets/ricardo.png",
+      titulo: "Magnífico!"
+    },
+    {
+      nome: "Ana",
+      texto: "Sinto confiança em acompanhar minha vacinação por aqui.",
+      imagem: "src/assets/ana.png",
+      titulo: "Seguro!"
+    }
   ];
 
   return (
@@ -63,35 +91,36 @@ const Home = () => {
             <p>Sobre nosso aplicativo e vacinas:</p>
           </div>
 
-          <div className="row">
-            {/* Testemunhos */}
-            <div className="col-md-6">
-              <div className="testimonials-grid">
-                {[{
-                  nome: "Cátia", texto: "Esse app facilitou muito o meu acesso à minha carteira de vacinação.", imagem: "src/assets/catia.png", titulo: "Incrível!"
-                }, {
-                  nome: "John", texto: "O design é intuitivo e me avisa automaticamente sobre vacinas.", imagem: "src/assets/john.png", titulo: "Excelente!"
-                }, {
-                  nome: "Ricardo", texto: "O app mantém minhas vacinas organizadas e acessíveis.", imagem: "src/assets/ricardo.png", titulo: "Magnífico!"
-                }, {
-                  nome: "Ana", texto: "Sinto confiança em acompanhar minha vacinação por aqui.", imagem: "src/assets/ana.png", titulo: "Seguro!"
-                }].map((t, i) => (
-                  <div className="card" key={i}>
-                    <div className="card-header">
-                      <img src={t.imagem} alt={t.nome} />
-                    </div>
-                    <div className="card-body">
-                      <h3>{t.titulo}</h3>
-                      <p>{t.texto}</p>
-                      <footer className="blockquote-footer">{t.nome}</footer>
-                    </div>
-                  </div>
+          <Grid container spacing={4} sx={{ mt: 8 }}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h4" color="primary" fontWeight={700} mb={2}>
+                Saiba mais
+              </Typography>
+              <Typography variant="subtitle1" color="secondary" mb={4}>
+                Sobre nosso aplicativo e vacinas:
+              </Typography>
+              <Grid container spacing={2}>
+                {testimonials.map((t, i) => (
+                  <Grid item xs={12} sm={6} key={i}>
+                    <Card elevation={3} sx={{ borderRadius: 3, bgcolor: "#fff" }}>
+                      <CardHeader
+                        avatar={<Avatar src={t.imagem} sx={{ width: 56, height: 56 }} />}
+                        title={<Typography fontWeight={700}>{t.titulo}</Typography>}
+                      />
+                      <CardContent sx={{ bgcolor: "#f6f8fc", borderRadius: 2 }}>
+                        <Typography variant="body2" color="text.secondary">{t.texto}</Typography>
+                        <Typography variant="caption" color="success.main" display="block" mt={1}>
+                          {t.nome}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
                 ))}
-              </div>
-            </div>
+              </Grid>
+            </Grid>
 
             {/* Gráfico */}
-            <div className="col-md-6" style={{ paddingLeft: '140px' }}>
+            <Grid item xs={12} md={6} sx={{ paddingLeft: '140px' }}>
               <div className="d-flex flex-column align-items-start" style={{ marginTop: '40px' }}>
                 <h2 className="text-center mb-4 titulo">Impacto das Vacinas na Mortalidade</h2>
 
@@ -125,8 +154,8 @@ const Home = () => {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            </div>
-          </div>
+            </Grid>
+          </Grid>
         </section>
 
         {/* Seção informativa */}

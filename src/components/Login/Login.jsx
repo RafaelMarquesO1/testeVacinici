@@ -1,13 +1,8 @@
 import { useState, useEffect } from 'react';
-import './Login.css';
+import { Box, TextField, Button, Typography, InputAdornment, IconButton, Alert, CircularProgress, Paper } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-
-// Ícones do MUI
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-
-// Imagem
 import vaciniilus from '../../assets/vaciniilus.png';
 
 export default function Login() {
@@ -52,82 +47,70 @@ export default function Login() {
 
   useEffect(() => {
     if (error) {
-      const timer = setTimeout(() => {
-        setError('');
-      }, 3000);
+      const timer = setTimeout(() => setError(''), 3000);
       return () => clearTimeout(timer);
     }
   }, [error]);
 
   return (
-    <div className="login-page vh-100 d-flex align-items-center justify-content-center">
-      <div className="row w-75 shadow-lg rounded p-5 login-box">
-
-        {/* Seção de Login */}
-        <div className="col-md-6 d-flex flex-column login-title">
-          <h2 className="fw-bold">Gerenciamento de Usuários</h2>
-          <p className="frase4"><strong>Acesso restrito para administradores.</strong></p>
-
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
+      <Paper elevation={6} sx={{ display: 'flex', width: { xs: '100%', md: 700 }, p: 4, borderRadius: 3 }}>
+        <Box sx={{ flex: 1, pr: 3, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <Typography variant="h5" fontWeight="bold" mb={1}>Gerenciamento de Usuários</Typography>
+          <Typography variant="body2" color="text.secondary" mb={2}><strong>Acesso restrito para administradores.</strong></Typography>
           <form onSubmit={handleSubmit}>
-            <div className="form-input mb-3">
-              <input
-                type="email"
-                className="form-control"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="position-relative form-input mb-2">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                className="form-control pe-5"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                maxLength={10}
-              />
-              <button
-                type="button"
-                className="btn position-absolute top-50 end-0 translate-middle-y me-2"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-                style={{ background: 'transparent', border: 'none' }}
-              >
-                {showPassword ? <VisibilityOffIcon /> : <RemoveRedEyeIcon />}
-              </button>
-            </div>
-
-            <div className="password-rules small text-start mb-3 bg-light p-2 rounded">
-              {validations.map(({ regex, label }, index) => (
-                <div key={index} className={regex.test(password) ? 'text-success' : 'text-danger'}>
+            <TextField
+              label="Email"
+              type="email"
+              fullWidth
+              margin="normal"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              autoFocus
+            />
+            <TextField
+              label="Senha"
+              type={showPassword ? 'text' : 'password'}
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              inputProps={{ maxLength: 10 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(v => !v)} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+            <Box sx={{ mb: 2 }}>
+              {validations.map(({ regex, label }, i) => (
+                <Typography key={i} variant="caption" color={regex.test(password) ? 'success.main' : 'error'}>
                   {regex.test(password) ? '✔' : '✖'} {label}
-                </div>
+                </Typography>
               ))}
-            </div>
-
-            <button 
-              type="submit" 
-              className="btn btn-dark w-100 btn-login mt-2" 
+            </Box>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
               disabled={loading}
+              sx={{ mt: 1 }}
+              startIcon={loading && <CircularProgress size={18} />}
             >
               {loading ? 'Entrando...' : 'Entrar'}
-            </button>
+            </Button>
           </form>
-        </div>
-
-        {/* Seção de Ilustração */}
-        <div className="col-md-6 bg-light d-flex flex-column align-items-center justify-content-center rounded login-right">
-          <img src={vaciniilus} alt="Ilustração" className="img-fluid" />
-        </div>
-      </div>
-
-      {error && (
-        <div className="toast-error">
-          {error}
-        </div>
-      )}
-    </div>
+          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+        </Box>
+        <Box sx={{ flex: 1, display: { xs: 'none', md: 'flex' }, alignItems: 'center', justifyContent: 'center' }}>
+          <img src={vaciniilus} alt="Ilustração" style={{ maxWidth: '100%', borderRadius: 8 }} />
+        </Box>
+      </Paper>
+    </Box>
   );
 }
