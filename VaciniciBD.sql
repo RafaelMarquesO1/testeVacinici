@@ -1,65 +1,74 @@
--- Banco de Dados VaciniciBD (MySQL/MariaDB)
-DROP DATABASE IF EXISTS VaciniciBD;
+USE master;
+GO
+
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'VaciniciBD')
+    DROP DATABASE VaciniciBD;
+GO
+
 CREATE DATABASE VaciniciBD;
+GO
+
 USE VaciniciBD;
+GO
 
 -- Tabela de Usuários
 CREATE TABLE usuarios (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nome_completo VARCHAR(100) NOT NULL,
-  email VARCHAR(100) UNIQUE,
-  telefone VARCHAR(20),
-  cpf VARCHAR(20) UNIQUE NOT NULL,
+  id BIGINT IDENTITY(1,1) PRIMARY KEY,
+  nome_completo NVARCHAR(100) NOT NULL,
+  email NVARCHAR(100) UNIQUE,
+  telefone NVARCHAR(20),
+  cpf NVARCHAR(20) UNIQUE NOT NULL,
   data_nascimento DATE,
-  genero VARCHAR(20),
-  tipo_usuario VARCHAR(20) NOT NULL, -- 'Paciente' ou 'Funcionario'
-  cargo VARCHAR(50), -- Para funcionários
-  foto_perfil VARCHAR(255),
-  data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+  genero NVARCHAR(20),
+  tipo_usuario NVARCHAR(20) NOT NULL, -- 'Paciente' ou 'Funcionario'
+  cargo NVARCHAR(50), -- Para funcionários
+  foto_perfil NVARCHAR(255),
+  data_cadastro DATETIME2 DEFAULT GETDATE(),
+  senha NVARCHAR(255) NOT NULL
 );
 
 -- Tabela de Vacinas
 CREATE TABLE vacinas (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nome VARCHAR(100) NOT NULL,
-  fabricante VARCHAR(100),
-  descricao TEXT,
+  id BIGINT IDENTITY(1,1) PRIMARY KEY,
+  nome NVARCHAR(100) NOT NULL,
+  fabricante NVARCHAR(100),
+  descricao NTEXT,
   doses_recomendadas INT,
   intervalo_doses INT, -- em dias
   idade_minima INT, -- em meses
   idade_maxima INT, -- em meses
-  categoria VARCHAR(50), -- obrigatória, opcional, sazonal
-  imagem_url VARCHAR(255)
+  categoria NVARCHAR(50), -- obrigatória, opcional, sazonal
+  imagem_url NVARCHAR(255)
 );
 
 -- Tabela de Locais de Vacinação
 CREATE TABLE locais_vacinacao (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nome VARCHAR(100) NOT NULL,
-  endereco VARCHAR(255) NOT NULL,
-  cidade VARCHAR(100) NOT NULL,
-  estado VARCHAR(2) NOT NULL,
-  cep VARCHAR(10),
-  telefone VARCHAR(20),
-  horario_funcionamento VARCHAR(100),
+  id BIGINT IDENTITY(1,1) PRIMARY KEY,
+  nome NVARCHAR(100) NOT NULL,
+  endereco NVARCHAR(255) NOT NULL,
+  cidade NVARCHAR(100) NOT NULL,
+  estado NVARCHAR(2) NOT NULL,
+  cep NVARCHAR(10),
+  telefone NVARCHAR(20),
+  horario_funcionamento NVARCHAR(100),
   latitude FLOAT,
   longitude FLOAT,
-  tipo VARCHAR(50) -- posto de saúde, hospital, clínica
+  tipo NVARCHAR(50) -- posto de saúde, hospital, clínica
 );
 
 -- Tabela de Histórico de Vacinação
 CREATE TABLE historico_vacinacao (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  paciente_id INT NOT NULL,
-  funcionario_id INT NOT NULL,
-  vacina_id INT NOT NULL,
-  dose VARCHAR(50) NOT NULL,
+  id BIGINT IDENTITY(1,1) PRIMARY KEY,
+  paciente_id BIGINT NOT NULL,
+  funcionario_id BIGINT NOT NULL,
+  vacina_id BIGINT NOT NULL,
+  dose NVARCHAR(50) NOT NULL,
   data_aplicacao DATE NOT NULL,
-  lote VARCHAR(50) NOT NULL,
+  lote NVARCHAR(50) NOT NULL,
   validade DATE,
-  local_id INT,
-  comprovante_url VARCHAR(255),
-  observacoes TEXT,
+  local_id BIGINT,
+  comprovante_url NVARCHAR(255),
+  observacoes NTEXT,
   FOREIGN KEY (paciente_id) REFERENCES usuarios(id) ON DELETE CASCADE,
   FOREIGN KEY (funcionario_id) REFERENCES usuarios(id),
   FOREIGN KEY (vacina_id) REFERENCES vacinas(id),
@@ -68,19 +77,19 @@ CREATE TABLE historico_vacinacao (
 
 -- Tabela de Logs de Acesso/Ações
 CREATE TABLE logs (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  usuario_id INT,
-  acao VARCHAR(255) NOT NULL,
-  data_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
-  detalhes TEXT,
+  id BIGINT IDENTITY(1,1) PRIMARY KEY,
+  usuario_id BIGINT,
+  acao NVARCHAR(255) NOT NULL,
+  data_hora DATETIME2 DEFAULT GETDATE(),
+  detalhes NTEXT,
   FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
 );
 
 -- Dados de teste
-INSERT INTO usuarios (nome_completo, email, telefone, cpf, data_nascimento, tipo_usuario, cargo) VALUES
-('James Moraes', 'jamesmoraes@gmail.com', '11987654321', '111.222.333-44', '1992-08-25', 'Paciente', NULL),
-('Maria Silva', 'maria.silva@ubs.gov.br', '11987654322', '101.101.101-01', '1980-05-10', 'Funcionario', 'Enfermeira'),
-('Stephanie Santos', 'stephanie.santos@ubs.gov.br', '11987654323', '102.102.102-02', '1985-09-15', 'Funcionario', 'Enfermeira');
+INSERT INTO usuarios (nome_completo, email, telefone, cpf, data_nascimento, tipo_usuario, cargo, senha) VALUES
+('James Moraes', 'jamesmoraes@gmail.com', '11987654321', '111.222.333-44', '1992-08-25', 'Paciente', NULL, 'james123456'), -- password
+('Maria Silva', 'maria.silva@ubs.gov.br', '11987654322', '101.101.101-01', '1980-05-10', 'Funcionario', 'Enfermeira', 'admin123456'),
+('Stephanie Santos', 'stephanie.santos@ubs.gov.br', '11987654323', '102.102.102-02', '1985-09-15', 'Funcionario', 'Enfermeira', 'Santos44444');
 
 INSERT INTO vacinas (nome, fabricante, descricao, doses_recomendadas, categoria) VALUES
 ('COVID-19', 'Pfizer', 'Vacina contra o coronavírus', 2, 'obrigatória'),
@@ -106,7 +115,4 @@ INSERT INTO historico_vacinacao (paciente_id, funcionario_id, vacina_id, dose, d
 INSERT INTO logs (usuario_id, acao, detalhes) VALUES
 (1, 'Login', 'Usuário realizou login no sistema');
 
-
-// Só pra anotar!
-// cd backend
-// node index.js
+GO
