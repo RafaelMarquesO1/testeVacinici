@@ -1,44 +1,72 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Grid, Paper, Avatar, List, ListItem, ListItemAvatar, ListItemText, useTheme
 } from '@mui/material';
-import { People, PersonAdd, Group, TrendingUp } from '@mui/icons-material';
-
-const stats = [
-  {
-    icon: <People fontSize="large" color="primary" />,
-    title: "Total de Pacientes",
-    value: "1,482",
-    change: "+12 na última semana"
-  },
-  {
-    icon: <Group fontSize="large" color="primary" />,
-    title: "Total de Funcionários",
-    value: "24",
-    change: "+2 no último mês"
-  },
-  {
-    icon: <PersonAdd fontSize="large" color="primary" />,
-    title: "Novos Cadastros (Hoje)",
-    value: "8"
-  },
-  {
-    icon: <TrendingUp fontSize="large" color="primary" />,
-    title: "Usuários Ativos",
-    value: "1,506",
-    change: "+98.5% de taxa de atividade"
-  }
-];
+import { People, PersonAdd, Group, TrendingUp, Vaccines, LocationOn } from '@mui/icons-material';
+import { api } from '../services/api';
 
 const activities = [
-  { desc: <>Novo usuário <strong>João Silva</strong> cadastrado.</>, time: "2 min atrás" },
-  { desc: <>Novo paciente <strong>Maria Oliveira</strong> cadastrado por <strong>Dr(a). Ana</strong>.</>, time: "15 min atrás" },
-  { desc: <>Dados do usuário <strong>Carlos Pereira</strong> atualizados.</>, time: "1 hora atrás" },
-  { desc: <>Relatório de usuários ativos gerado.</>, time: "3 horas atrás" }
+  { desc: <>Sistema <strong>Vacinici</strong> iniciado com sucesso.</>, time: "Agora" },
+  { desc: <>Dados carregados do <strong>banco SQL Server</strong>.</>, time: "Agora" },
+  { desc: <>Dashboard <strong>conectado à API</strong>.</>, time: "Agora" },
+  { desc: <>Sistema pronto para <strong>gerenciamento</strong>.</>, time: "Agora" }
 ];
 
 export default function DashboardPage() {
   const theme = useTheme();
+  const [stats, setStats] = useState([
+    { icon: <People fontSize="large" color="primary" />, title: "Total de Pacientes", value: "0" },
+    { icon: <Group fontSize="large" color="primary" />, title: "Total de Funcionários", value: "0" },
+    { icon: <Vaccines fontSize="large" color="primary" />, title: "Total de Vacinas", value: "0" },
+    { icon: <LocationOn fontSize="large" color="primary" />, title: "Locais de Vacinação", value: "0" }
+  ]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [usuarios, vacinas, locais] = await Promise.all([
+          api.getUsuarios(),
+          api.getVacinas(),
+          api.getLocaisVacinacao()
+        ]);
+
+        const pacientes = usuarios.filter(u => u.tipoUsuario === 'Paciente');
+        const funcionarios = usuarios.filter(u => u.tipoUsuario === 'Funcionario');
+
+        setStats([
+          {
+            icon: <People fontSize="large" color="primary" />,
+            title: "Total de Pacientes",
+            value: pacientes.length.toString(),
+            change: `${pacientes.length} pacientes cadastrados`
+          },
+          {
+            icon: <Group fontSize="large" color="primary" />,
+            title: "Total de Funcionários",
+            value: funcionarios.length.toString(),
+            change: `${funcionarios.length} funcionários ativos`
+          },
+          {
+            icon: <Vaccines fontSize="large" color="primary" />,
+            title: "Total de Vacinas",
+            value: vacinas.length.toString(),
+            change: `${vacinas.length} vacinas disponíveis`
+          },
+          {
+            icon: <LocationOn fontSize="large" color="primary" />,
+            title: "Locais de Vacinação",
+            value: locais.length.toString(),
+            change: `${locais.length} locais cadastrados`
+          }
+        ]);
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      }
+    };
+
+    loadData();
+  }, []);
+
   return (
     <Box>
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: theme.palette.primary.main }}>

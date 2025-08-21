@@ -31,21 +31,36 @@ export const AuthProvider = ({ children }) => {
     setError('');
     
     try {
+      console.log('AuthContext: Chamando api.login com:', email);
       const response = await api.login(email, password);
       
-      if (response.success) {
-        // Verificar se o usuário é administrador
-        if (response.user.cargo !== 'Administrador') {
-          setError('Acesso restrito apenas para administradores.');
-          throw new Error('Acesso restrito apenas para administradores.');
-        }
-        
-        setCurrentUser(response.user);
-        localStorage.setItem('vacinici_user', JSON.stringify(response.user));
-        localStorage.setItem('vacinici_token', response.token);
-        return response.user;
+      console.log('AuthContext: Resposta da API:', response);
+      
+      // A resposta da API Spring Boot tem token, id, email, nomeCompleto, tipoUsuario, cargo
+      const userData = {
+        id: response.id,
+        email: response.email,
+        nomeCompleto: response.nomeCompleto,
+        tipoUsuario: response.tipoUsuario,
+        cargo: response.cargo
+      };
+      
+      console.log('Dados do usuário:', userData);
+      
+      // Verificar se o usuário é funcionário (administrador)
+      if (response.tipoUsuario !== 'Funcionario') {
+        setError('Acesso restrito apenas para funcionários.');
+        throw new Error('Acesso restrito apenas para funcionários.');
       }
+      
+      setCurrentUser(userData);
+      localStorage.setItem('vacinici_user', JSON.stringify(userData));
+      localStorage.setItem('vacinici_token', response.token);
+      console.log('Login realizado com sucesso!');
+      return userData;
     } catch (err) {
+      console.log('AuthContext: Erro capturado:', err);
+      console.log('AuthContext: Mensagem do erro:', err.message);
       setError(err.message || 'Falha ao fazer login');
       throw err;
     } finally {

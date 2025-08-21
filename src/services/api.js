@@ -286,19 +286,19 @@ const mockData = {
   ]
 };
 
-// Funções de API simuladas
+// Funções de API para o backend Spring Boot
 export const api = {
   // Usuários
   getUsuarios: async () => {
-    const res = await fetch('http://localhost:3001/api/usuarios');
+    const res = await fetch('http://localhost:8080/api/usuarios');
     return res.json();
   },
   getUsuarioById: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/usuarios/${id}`);
+    const res = await fetch(`http://localhost:8080/api/usuarios/${id}`);
     return res.json();
   },
   createUsuario: async (usuario) => {
-    const res = await fetch('http://localhost:3001/api/usuarios', {
+    const res = await fetch('http://localhost:8080/api/usuarios', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(usuario)
@@ -306,7 +306,7 @@ export const api = {
     return res.json();
   },
   updateUsuario: async (id, usuario) => {
-    const res = await fetch(`http://localhost:3001/api/usuarios/${id}`, {
+    const res = await fetch(`http://localhost:8080/api/usuarios/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(usuario)
@@ -314,21 +314,29 @@ export const api = {
     return res.json();
   },
   deleteUsuario: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/usuarios/${id}`, { method: 'DELETE' });
-    return res.json();
+    const res = await fetch(`http://localhost:8080/api/usuarios/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      throw new Error(`Erro ao deletar usuário: ${res.status}`);
+    }
+    // DELETE pode retornar 200 ou 204, verifica se há conteúdo para fazer parse
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return res.json();
+    }
+    return {}; // Retorna objeto vazio se não houver JSON
   },
 
   // Vacinas
   getVacinas: async () => {
-    const res = await fetch('http://localhost:3001/api/vacinas');
+    const res = await fetch('http://localhost:8080/api/vacinas');
     return res.json();
   },
   getVacinaById: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/vacinas/${id}`);
+    const res = await fetch(`http://localhost:8080/api/vacinas/${id}`);
     return res.json();
   },
   createVacina: async (vacina) => {
-    const res = await fetch('http://localhost:3001/api/vacinas', {
+    const res = await fetch('http://localhost:8080/api/vacinas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(vacina)
@@ -336,7 +344,7 @@ export const api = {
     return res.json();
   },
   updateVacina: async (id, vacina) => {
-    const res = await fetch(`http://localhost:3001/api/vacinas/${id}`, {
+    const res = await fetch(`http://localhost:8080/api/vacinas/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(vacina)
@@ -344,21 +352,24 @@ export const api = {
     return res.json();
   },
   deleteVacina: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/vacinas/${id}`, { method: 'DELETE' });
-    return res.json();
+    const res = await fetch(`http://localhost:8080/api/vacinas/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      throw new Error(`Erro ao deletar vacina: ${res.status}`);
+    }
+    return res.status === 204 ? {} : res.json();
   },
 
   // Locais de Vacinação
   getLocaisVacinacao: async () => {
-    const res = await fetch('http://localhost:3001/api/locais');
+    const res = await fetch('http://localhost:8080/api/locais');
     return res.json();
   },
   getLocalById: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/locais/${id}`);
+    const res = await fetch(`http://localhost:8080/api/locais/${id}`);
     return res.json();
   },
   createLocal: async (local) => {
-    const res = await fetch('http://localhost:3001/api/locais', {
+    const res = await fetch('http://localhost:8080/api/locais', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(local)
@@ -366,7 +377,7 @@ export const api = {
     return res.json();
   },
   updateLocal: async (id, local) => {
-    const res = await fetch(`http://localhost:3001/api/locais/${id}`, {
+    const res = await fetch(`http://localhost:8080/api/locais/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(local)
@@ -374,143 +385,28 @@ export const api = {
     return res.json();
   },
   deleteLocal: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/locais/${id}`, { method: 'DELETE' });
-    return res.json();
+    const res = await fetch(`http://localhost:8080/api/locais/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      throw new Error(`Erro ao deletar local: ${res.status}`);
+    }
+    return res.status === 204 ? {} : res.json();
   },
 
-  // Agendamentos
-  getAgendamentos: async () => {
-    const res = await fetch('http://localhost:3001/api/agendamentos');
-    return res.json();
-  },
-  getAgendamentoById: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/agendamentos/${id}`);
-    return res.json();
-  },
-  createAgendamento: async (agendamento) => {
-    const res = await fetch('http://localhost:3001/api/agendamentos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(agendamento)
-    });
-    return res.json();
-  },
-  updateAgendamento: async (id, agendamento) => {
-    const res = await fetch(`http://localhost:3001/api/agendamentos/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(agendamento)
-    });
-    return res.json();
-  },
-  deleteAgendamento: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/agendamentos/${id}`, { method: 'DELETE' });
-    return res.json();
-  },
 
-  // Feedback
-  getFeedbacks: async () => {
-    const res = await fetch('http://localhost:3001/api/feedback');
-    return res.json();
-  },
-  getFeedbackById: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/feedback/${id}`);
-    return res.json();
-  },
-  createFeedback: async (feedback) => {
-    const res = await fetch('http://localhost:3001/api/feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(feedback)
-    });
-    return res.json();
-  },
-  updateFeedback: async (id, feedback) => {
-    const res = await fetch(`http://localhost:3001/api/feedback/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(feedback)
-    });
-    return res.json();
-  },
-  deleteFeedback: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/feedback/${id}`, { method: 'DELETE' });
-    return res.json();
-  },
-
-  // Notícias
-  getNoticias: async () => {
-    const res = await fetch('http://localhost:3001/api/noticias');
-    return res.json();
-  },
-  getNoticiaById: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/noticias/${id}`);
-    return res.json();
-  },
-  createNoticia: async (noticia) => {
-    const res = await fetch('http://localhost:3001/api/noticias', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(noticia)
-    });
-    return res.json();
-  },
-  updateNoticia: async (id, noticia) => {
-    const res = await fetch(`http://localhost:3001/api/noticias/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(noticia)
-    });
-    return res.json();
-  },
-  deleteNoticia: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/noticias/${id}`, { method: 'DELETE' });
-    return res.json();
-  },
-
-  // Logs
-  getLogs: async () => {
-    const res = await fetch('http://localhost:3001/api/logs');
-    return res.json();
-  },
-  getLogById: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/logs/${id}`);
-    return res.json();
-  },
-  createLog: async (log) => {
-    const res = await fetch('http://localhost:3001/api/logs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(log)
-    });
-    return res.json();
-  },
-  updateLog: async (id, log) => {
-    const res = await fetch(`http://localhost:3001/api/logs/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(log)
-    });
-    return res.json();
-  },
-  deleteLog: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/logs/${id}`, { method: 'DELETE' });
-    return res.json();
-  },
 
   // Histórico de Vacinação
   getHistoricoVacinacao: async (paciente_id) => {
-    let url = 'http://localhost:3001/api/historico';
-    if (paciente_id) url += `?paciente_id=${paciente_id}`;
+    let url = 'http://localhost:8080/api/historico';
+    if (paciente_id) url += `/paciente/${paciente_id}`;
     const res = await fetch(url);
     return res.json();
   },
   getHistoricoById: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/historico/${id}`);
+    const res = await fetch(`http://localhost:8080/api/historico/${id}`);
     return res.json();
   },
   createHistorico: async (registro) => {
-    const res = await fetch('http://localhost:3001/api/historico', {
+    const res = await fetch('http://localhost:8080/api/historico', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(registro)
@@ -518,7 +414,7 @@ export const api = {
     return res.json();
   },
   updateHistorico: async (id, registro) => {
-    const res = await fetch(`http://localhost:3001/api/historico/${id}`, {
+    const res = await fetch(`http://localhost:8080/api/historico/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(registro)
@@ -526,19 +422,22 @@ export const api = {
     return res.json();
   },
   deleteHistorico: async (id) => {
-    const res = await fetch(`http://localhost:3001/api/historico/${id}`, { method: 'DELETE' });
-    return res.json();
+    const res = await fetch(`http://localhost:8080/api/historico/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      throw new Error(`Erro ao deletar histórico: ${res.status}`);
+    }
+    return res.status === 204 ? {} : res.json();
   },
 
-  // Login (já adaptado)
+  // Login
   login: async (email, senha) => {
-    const response = await fetch('http://localhost:3001/api/login', {
+    const response = await fetch('http://localhost:8080/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, senha })
     });
     const data = await response.json();
-    if (!response.ok || !data.success) {
+    if (!response.ok) {
       throw new Error(data.message || 'Credenciais inválidas');
     }
     return data;

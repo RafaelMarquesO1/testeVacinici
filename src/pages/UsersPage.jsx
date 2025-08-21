@@ -10,7 +10,20 @@ import { api } from '../services/api';
 function UserForm({ open, onClose, onSubmit, initialData, isStaff }) {
   const [form, setForm] = useState(initialData || {});
   useEffect(() => { setForm(initialData || {}); }, [initialData]);
-  const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  const handleChange = e => {
+    let { name, value } = e.target;
+    
+    // Formatação automática do CPF
+    if (name === 'cpf') {
+      value = value.replace(/\D/g, ''); // Remove tudo que não é dígito
+      value = value.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona primeiro ponto
+      value = value.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona segundo ponto
+      value = value.replace(/(\d{3})-(\d{1,2})$/, '$1-$2'); // Adiciona hífen
+      value = value.replace(/(\d{3})(\d{2})$/, '$1-$2'); // Adiciona hífen
+    }
+    
+    setForm(f => ({ ...f, [name]: value }));
+  };
   const handleSubmit = () => onSubmit(form);
 
   return (
@@ -18,17 +31,25 @@ function UserForm({ open, onClose, onSubmit, initialData, isStaff }) {
       <DialogTitle sx={{ fontWeight: 700 }}>{form.id ? 'Editar Usuário' : 'Novo Usuário'}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField label="Nome Completo" name="nome_completo" value={form.nome_completo || ''} onChange={handleChange} fullWidth required />
+          <TextField label="Nome Completo" name="nomeCompleto" value={form.nomeCompleto || ''} onChange={handleChange} fullWidth required />
           <TextField label="Email" name="email" value={form.email || ''} onChange={handleChange} fullWidth required />
           <TextField label="Telefone" name="telefone" value={form.telefone || ''} onChange={handleChange} fullWidth />
-          <TextField label="CPF" name="cpf" value={form.cpf || ''} onChange={handleChange} fullWidth />
-          <TextField label="Data de Nascimento" name="data_nascimento" type="date" value={form.data_nascimento || ''} onChange={handleChange} fullWidth InputLabelProps={{ shrink: true }} />
+          <TextField 
+            label="CPF" 
+            name="cpf" 
+            value={form.cpf || ''} 
+            onChange={handleChange} 
+            fullWidth 
+            placeholder="000.000.000-00"
+            inputProps={{ maxLength: 14 }}
+          />
+          <TextField label="Data de Nascimento" name="dataNascimento" type="date" value={form.dataNascimento || ''} onChange={handleChange} fullWidth InputLabelProps={{ shrink: true }} />
           <TextField label="Gênero" name="genero" value={form.genero || ''} onChange={handleChange} fullWidth />
           <TextField
             select
             label="Tipo de Usuário"
-            name="tipo_usuario"
-            value={form.tipo_usuario || (isStaff ? 'Funcionario' : 'Paciente')}
+            name="tipoUsuario"
+            value={form.tipoUsuario || (isStaff ? 'Funcionario' : 'Paciente')}
             onChange={handleChange}
             SelectProps={{ native: true }}
             fullWidth
@@ -36,9 +57,10 @@ function UserForm({ open, onClose, onSubmit, initialData, isStaff }) {
             <option value="Paciente">Paciente</option>
             <option value="Funcionario">Funcionário</option>
           </TextField>
-          {isStaff && (
+          {form.tipoUsuario === 'Funcionario' && (
             <TextField label="Cargo" name="cargo" value={form.cargo || ''} onChange={handleChange} fullWidth />
           )}
+          <TextField label="Senha" name="senha" type="password" value={form.senha || ''} onChange={handleChange} fullWidth required />
         </Box>
       </DialogContent>
       <DialogActions>
@@ -53,18 +75,18 @@ function UserDetailDialog({ open, user, onClose }) {
   if (!user) return null;
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ fontWeight: 700 }}>Detalhes de {user.nome_completo}</DialogTitle>
+      <DialogTitle sx={{ fontWeight: 700 }}>Detalhes de {user.nomeCompleto}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <Avatar src={user.foto_perfil} sx={{ width: 56, height: 56, border: '2px solid #e3eafc' }} />
-          <Typography variant="h6" fontWeight={700}>{user.nome_completo}</Typography>
+          <Avatar src={user.fotoPerfil} sx={{ width: 56, height: 56, border: '2px solid #e3eafc' }} />
+          <Typography variant="h6" fontWeight={700}>{user.nomeCompleto}</Typography>
         </Box>
         <Typography><b>Email:</b> {user.email}</Typography>
         <Typography><b>Telefone:</b> {user.telefone}</Typography>
         <Typography><b>CPF:</b> {user.cpf}</Typography>
-        <Typography><b>Nascimento:</b> {user.data_nascimento}</Typography>
+        <Typography><b>Nascimento:</b> {user.dataNascimento}</Typography>
         <Typography><b>Gênero:</b> {user.genero}</Typography>
-        <Typography><b>Tipo:</b> {user.tipo_usuario}</Typography>
+        <Typography><b>Tipo:</b> {user.tipoUsuario}</Typography>
         {user.cargo && <Typography><b>Cargo:</b> {user.cargo}</Typography>}
       </DialogContent>
       <DialogActions>
@@ -90,8 +112,10 @@ export default function UsersPage() {
     setLoading(true);
     try {
       const data = await api.getUsuarios();
+      console.log('Usuários carregados:', data);
       setUsers(data);
-    } catch {
+    } catch (error) {
+      console.error('Erro ao carregar usuários:', error);
       setSnack({ open: true, msg: 'Erro ao carregar usuários', severity: 'error' });
     }
     setLoading(false);
@@ -104,10 +128,10 @@ export default function UsersPage() {
     setIsStaff(v === 1);
   };
 
-  const filteredUsers = users.filter(u => (tab === 0 ? u.tipo_usuario === 'Paciente' : u.tipo_usuario === 'Funcionario'));
+  const filteredUsers = users.filter(u => (tab === 0 ? u.tipoUsuario === 'Paciente' : u.tipoUsuario === 'Funcionario'));
 
   const handleAdd = () => {
-    setFormInitial({ tipo_usuario: tab === 0 ? 'Paciente' : 'Funcionario' });
+    setFormInitial({ tipoUsuario: tab === 0 ? 'Paciente' : 'Funcionario' });
     setFormOpen(true);
   };
 
@@ -117,30 +141,62 @@ export default function UsersPage() {
   };
 
   const handleDelete = async user => {
-    if (window.confirm('Deseja excluir este usuário?')) {
+    if (window.confirm(`Deseja excluir o usuário ${user.nomeCompleto}?`)) {
+      const originalUsers = users;
       try {
+        // Remove o usuário da lista local ANTES da chamada da API para atualização instantânea
+        setUsers(prevUsers => prevUsers.filter(u => u.id !== user.id));
+        
+        // Chama a API para deletar no backend
         await api.deleteUsuario(user.id);
-        setSnack({ open: true, msg: 'Usuário excluído', severity: 'success' });
-        fetchUsers();
-      } catch {
-        setSnack({ open: true, msg: 'Erro ao excluir', severity: 'error' });
+        
+        setSnack({ open: true, msg: 'Usuário excluído com sucesso!', severity: 'success' });
+      } catch (error) {
+        console.error('Erro ao excluir:', error);
+        // Se der erro, restaura a lista original
+        setUsers(originalUsers);
+        setSnack({ open: true, msg: 'Erro ao excluir usuário', severity: 'error' });
       }
     }
   };
 
   const handleFormSubmit = async data => {
     try {
+      // Validação básica
+      if (!data.nomeCompleto || !data.email || !data.cpf || !data.tipoUsuario || !data.senha) {
+        setSnack({ open: true, msg: 'Preencha todos os campos obrigatórios', severity: 'error' });
+        return;
+      }
+
+      // Validação de CPF
+      if (data.cpf.length !== 14) {
+        setSnack({ open: true, msg: 'CPF deve ter 11 dígitos', severity: 'error' });
+        return;
+      }
+
       if (data.id) {
-        await api.updateUsuario(data.id, data);
-        setSnack({ open: true, msg: 'Usuário atualizado', severity: 'success' });
+        const updatedUser = await api.updateUsuario(data.id, data);
+        // Atualiza o usuário na lista local imediatamente
+        setUsers(prevUsers => 
+          prevUsers.map(user => user.id === data.id ? updatedUser : user)
+        );
+        setSnack({ open: true, msg: 'Usuário atualizado com sucesso!', severity: 'success' });
       } else {
-        await api.createUsuario(data);
-        setSnack({ open: true, msg: 'Usuário criado', severity: 'success' });
+        const newUser = await api.createUsuario(data);
+        // Adiciona o novo usuário à lista local imediatamente
+        setUsers(prevUsers => {
+          const updatedList = [...prevUsers, newUser];
+          console.log('Lista atualizada com novo usuário:', updatedList);
+          return updatedList;
+        });
+        setSnack({ open: true, msg: 'Usuário criado com sucesso!', severity: 'success' });
       }
       setFormOpen(false);
-      fetchUsers();
-    } catch {
-      setSnack({ open: true, msg: 'Erro ao salvar', severity: 'error' });
+      setFormInitial(null);
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+      const errorMsg = error.response?.data?.message || error.message || 'Erro ao salvar usuário';
+      setSnack({ open: true, msg: errorMsg, severity: 'error' });
     }
   };
 
@@ -178,13 +234,13 @@ export default function UsersPage() {
                 <TableRow key={user.id} hover>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Avatar src={user.foto_perfil} sx={{ border: '2px solid #e3eafc' }} />
-                      <Typography fontWeight={600}>{user.nome_completo}</Typography>
+                      <Avatar src={user.fotoPerfil} sx={{ border: '2px solid #e3eafc' }} />
+                      <Typography fontWeight={600}>{user.nomeCompleto}</Typography>
                     </Box>
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.cpf}</TableCell>
-                  <TableCell>{user.data_nascimento}</TableCell>
+                  <TableCell>{user.dataNascimento}</TableCell>
                   {tab === 1 && <TableCell>{user.cargo}</TableCell>}
                   <TableCell>
                     <IconButton onClick={() => { setSelected(user); setDetailOpen(true); }} color="info"><Visibility /></IconButton>
@@ -204,7 +260,10 @@ export default function UsersPage() {
       )}
       <UserForm
         open={formOpen}
-        onClose={() => setFormOpen(false)}
+        onClose={() => {
+          setFormOpen(false);
+          setFormInitial(null);
+        }}
         onSubmit={handleFormSubmit}
         initialData={formInitial}
         isStaff={isStaff}

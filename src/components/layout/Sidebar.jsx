@@ -1,28 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Box, Typography, IconButton, Button } from '@mui/material';
 import { RxDashboard } from "react-icons/rx";
-import { FiUsers, FiLogOut, FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
+import { FiUsers, FiLogOut, FiMenu, FiX } from "react-icons/fi";
 import '../../styles/Dashboard.css';
 
 export default function Sidebar({ handleLogout }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const savedTheme = localStorage.getItem('theme');
-    return savedTheme === 'dark' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  });
-
-  useEffect(() => {
-    document.body.classList.toggle('dark', isDarkMode);
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-  }, [isDarkMode]);
 
   const handleLinkClick = () => {
     if (isMobileMenuOpen) setIsMobileMenuOpen(false);
   };
 
-  const toggleTheme = () => setIsDarkMode(prev => !prev);
+
 
   return (
     <>
@@ -72,9 +63,6 @@ export default function Sidebar({ handleLogout }) {
           </NavLink>
         </Box>
         <Box sx={{ mt: 'auto', p: 2 }}>
-          <Button onClick={toggleTheme} startIcon={isDarkMode ? <FiSun /> : <FiMoon />} fullWidth>
-            {!isCollapsed && (isDarkMode ? 'Modo Claro' : 'Modo Escuro')}
-          </Button>
           <Button onClick={handleLogout} startIcon={<FiLogOut />} color="error" fullWidth>
             {!isCollapsed && 'Sair'}
           </Button>

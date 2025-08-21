@@ -5,7 +5,7 @@ import Header from './Header';
 import { Box, ThemeProvider, CssBaseline, createTheme, Container } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 
-// Tema Material UI totalmente customizado
+// Tema Material UI customizado (apenas modo claro)
 const customTheme = createTheme({
   palette: {
     mode: 'light',

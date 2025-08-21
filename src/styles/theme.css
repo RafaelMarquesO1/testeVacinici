@@ -1,0 +1,210 @@
+/* Variáveis de tema */
+:root {
+  /* Tema Claro */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card: #ffffff;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --primary-color: #2E7D32;
+  --primary-hover: #1B5E20;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --navbar-bg: #ffffff;
+  --sidebar-bg: #f8f9fa;
+}
+
+[data-theme="dark"] {
+  /* Tema Escuro */
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-card: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --border-color: #404040;
+  --primary-color: #4CAF50;
+  --primary-hover: #66BB6A;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --navbar-bg: #1e1e1e;
+  --sidebar-bg: #2d2d2d;
+}
+
+/* Aplicar variáveis globalmente */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Cards e containers */
+.card, .dashboard-card {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 2px 4px var(--shadow) !important;
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--navbar-bg) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.navbar .nav-link {
+  color: var(--text-primary) !important;
+}
+
+.navbar .nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: var(--sidebar-bg) !important;
+  border-right: 1px solid var(--border-color) !important;
+}
+
+.sidebar .nav-link {
+  color: var(--text-secondary) !important;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Formulários */
+.form-control {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.form-control:focus {
+  background-color: var(--bg-card) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25) !important;
+}
+
+/* Botões */
+.btn-primary {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+
+.btn-outline-primary {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Tabelas */
+.table {
+  color: var(--text-primary) !important;
+}
+
+.table th {
+  border-color: var(--border-color) !important;
+  background-color: var(--bg-secondary) !important;
+}
+
+.table td {
+  border-color: var(--border-color) !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Modais */
+.modal-content {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.modal-header {
+  border-bottom-color: var(--border-color) !important;
+}
+
+.modal-footer {
+  border-top-color: var(--border-color) !important;
+}
+
+/* Alertas */
+.alert {
+  border-color: var(--border-color) !important;
+}
+
+/* Dropdown */
+.dropdown-menu {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dropdown-item {
+  color: var(--text-primary) !important;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Toggle do tema */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--primary-color);
+}
+
+/* Material-UI overrides */
+.MuiAppBar-root {
+  background-color: var(--navbar-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+.MuiToolbar-root {
+  background-color: var(--navbar-bg) !important;
+}
+
+.MuiTypography-root {
+  color: var(--text-primary) !important;
+}
+
+.MuiButton-root {
+  color: var(--text-primary) !important;
+}
+
+.MuiButton-outlined {
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.MuiIconButton-root {
+  color: var(--text-primary) !important;
+}
+
+/* Animações suaves */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
