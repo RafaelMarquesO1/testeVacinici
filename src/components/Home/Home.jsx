@@ -1,9 +1,8 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./Home.css";
-import Imagem from "../../assets/sla.png"; // Imagem principal do aplicativo
-import VideoSrc from "../../assets/video.mp4"; // Vídeo explicativo
-import { Box, Typography, Grid, Card, CardContent, CardHeader, Avatar, Paper } from "@mui/material";
+// import "./Home.css";
+import Imagem from "../../assets/sla.png";
+import VideoSrc from "../../assets/video.mp4";
+import { Box, Typography, Grid, Card, CardContent, CardHeader, Avatar, Container, Button, Chip } from "@mui/material";
 
 // Recharts
 import {
@@ -59,130 +58,96 @@ const Home = () => {
   ];
 
   return (
-    <section className="home-background">
-      <div className="container">
-
-        {/* Seção de Texto e Descrição */}
-        <div className="row align-items-start">
-          <div className="col-md-6 grouptext">
-            <h1 className="text-dark text1">
+    <Box component="section" sx={{ pt: { xs: 4, md: 8 } }}>
+      <Container maxWidth="xl">
+        <Grid container spacing={6} alignItems="center">
+          <Grid item xs={12} md={6}>
+            <Chip label="Carteira Digital de Vacinas" color="secondary" sx={{ mb: 2, fontWeight: 700 }} />
+            <Typography variant="h2" component="h1" sx={{ fontWeight: 900, mb: 2, letterSpacing: '-0.5px' }}>
               Sua carteira de vacina sempre com você
-            </h1>
-            <p className="text text2">
-              Com nosso aplicativo mobile, você pode facilmente acessar e armazenar sua
-              carteira de vacinação, tornando o processo mais rápido e seguro. Instale agora e
-              tenha suas vacinas sempre à mão!
-            </p>
-          </div>
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+              Com nosso aplicativo mobile, você acessa e armazena sua carteira de vacinação com segurança e rapidez.
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Button href="/entrar" variant="contained" color="primary" size="large">Começar agora</Button>
+              <Button href="#sobre" variant="outlined" color="secondary" size="large">Saiba mais</Button>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
+              <img src={Imagem} alt="Aplicativo de Vacinação" style={{ maxWidth: '100%', height: 'auto', borderRadius: 16 }} />
+            </Box>
+          </Grid>
+        </Grid>
 
-          {/* Imagem do Aplicativo */}
-          <div className="col-md-6 text-right">
-            <img src={Imagem} alt="Aplicativo de Vacinação" className="sla" />
-          </div>
-        </div>
-
-        {/* Seção de Testemunhos e Gráfico lado a lado */}
-        <section className="testimonials py-5">
-          <div className="saiba">
-            <h3>Saiba mais</h3>
-          </div>
-
-          <div className="saiba2">
-            <p>Sobre nosso aplicativo e vacinas:</p>
-          </div>
-
-          <Grid container spacing={4} sx={{ mt: 8 }}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h4" color="primary" fontWeight={700} mb={2}>
-                Saiba mais
-              </Typography>
-              <Typography variant="subtitle1" color="secondary" mb={4}>
-                Sobre nosso aplicativo e vacinas:
-              </Typography>
-              <Grid container spacing={2}>
-                {testimonials.map((t, i) => (
-                  <Grid item xs={12} sm={6} key={i}>
-                    <Card elevation={3} sx={{ borderRadius: 3, bgcolor: "#fff" }}>
-                      <CardHeader
-                        avatar={<Avatar src={t.imagem} sx={{ width: 56, height: 56 }} />}
-                        title={<Typography fontWeight={700}>{t.titulo}</Typography>}
-                      />
-                      <CardContent sx={{ bgcolor: "#f6f8fc", borderRadius: 2 }}>
-                        <Typography variant="body2" color="text.secondary">{t.texto}</Typography>
-                        <Typography variant="caption" color="success.main" display="block" mt={1}>
-                          {t.nome}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </Grid>
-
-            {/* Gráfico */}
-            <Grid item xs={12} md={6} sx={{ paddingLeft: '140px' }}>
-              <div className="d-flex flex-column align-items-start" style={{ marginTop: '40px' }}>
-                <h2 className="text-center mb-4 titulo">Impacto das Vacinas na Mortalidade</h2>
-
-                <ResponsiveContainer width={700} height={550}>
-                  <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="year" />
-                    <YAxis domain={[0, 12]} tickFormatter={(tick) => `${tick}%`} />
-                    <Tooltip formatter={(value) => `${value}%`} />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="semVacinas"
-                      stroke="#d62728"
-                      strokeDasharray="5 5"
-                      name="Sem Vacinas"
+        <Grid container spacing={6} sx={{ mt: { xs: 6, md: 10 } }}>
+          <Grid item xs={12} md={6}>
+            <Typography variant="h4" color="primary" fontWeight={900} mb={2}>
+              Saiba mais
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" mb={4}>
+              Sobre nosso aplicativo e vacinas:
+            </Typography>
+            <Grid container spacing={2}>
+              {testimonials.map((t, i) => (
+                <Grid item xs={12} sm={6} key={i}>
+                  <Card elevation={3} sx={{ borderRadius: 3 }}>
+                    <CardHeader
+                      avatar={<Avatar src={t.imagem} sx={{ width: 56, height: 56 }} />}
+                      title={<Typography fontWeight={700}>{t.titulo}</Typography>}
                     />
-                    <Line
-                      type="monotone"
-                      dataKey="comVacinas"
-                      stroke="#1f77b4"
-                      name="Com Vacinas"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="semVacinas"
-                      stroke={false}
-                      fill="#fdd"
-                      fillOpacity={0.3}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+                    <CardContent>
+                      <Typography variant="body2" color="text.secondary">{t.texto}</Typography>
+                      <Typography variant="caption" color="success.main" display="block" mt={1}>
+                        {t.nome}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
           </Grid>
-        </section>
 
-        {/* Seção informativa */}
-        <div className="col-12 frase1">
-          <h2>Para que serve a vacinação?</h2>
-          <p className="subtitulo">
-            Redução de Doenças: A vacinação ajudou a reduzir a incidência de doenças como sarampo, poliomielite, difteria e tétano em mais de 90% globalmente.
-            <br />
-            Impacto Econômico: A cada US$ 1 investido em programas de vacinação, estima-se que há um retorno de US$ 44 em benefícios de saúde.
-            <br />
-            Erradicação de Doenças: A varíola foi erradicada em 1980 graças a campanhas de vacinação em massa.
-            <br />
-            Prevenção de Mortes: Estima-se que vacinas previnem cerca de 2 a 3 milhões de mortes por ano, segundo a OMS.
-          </p>
-        </div>
+          <Grid item xs={12} md={6}>
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Impacto das Vacinas na Mortalidade</Typography>
+            <Box sx={{ width: '100%', height: 400 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="year" />
+                  <YAxis domain={[0, 12]} tickFormatter={(tick) => `${tick}%`} />
+                  <Tooltip formatter={(value) => `${value}%`} />
+                  <Legend />
+                  <Line type="monotone" dataKey="semVacinas" stroke="#d62728" strokeDasharray="5 5" name="Sem Vacinas" />
+                  <Line type="monotone" dataKey="comVacinas" stroke="#1f77b4" name="Com Vacinas" />
+                  <Area type="monotone" dataKey="semVacinas" stroke={false} fill="#fdd" fillOpacity={0.3} />
+                </LineChart>
+              </ResponsiveContainer>
+            </Box>
+          </Grid>
+        </Grid>
 
-        {/* Seção de Vídeo */}
-        <div className="col-12 text-center mt-4">
-          <div className="video-container">
-            <video className="video" autoPlay loop muted>
+        <Box sx={{ mt: { xs: 6, md: 10 } }}>
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>Para que serve a vacinação?</Typography>
+          <Typography variant="body1" color="text.secondary">
+            Redução de Doenças: A vacinação reduziu doenças como sarampo, poliomielite e tétano em mais de 90% globalmente.
+            <br />Impacto Econômico: A cada US$ 1 investido, há retorno estimado de US$ 44 em benefícios de saúde.
+            <br />Erradicação de Doenças: A varíola foi erradicada em 1980 graças a campanhas de vacinação em massa.
+            <br />Prevenção de Mortes: Vacinas previnem cerca de 2 a 3 milhões de mortes por ano (OMS).
+          </Typography>
+        </Box>
+
+        <Box sx={{ textAlign: 'center', mt: { xs: 6, md: 10 } }}>
+          <Box sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: 3 }}>
+            <video style={{ width: '100%', height: 'auto', display: 'block' }} autoPlay loop muted>
               <source src={VideoSrc} type="video/mp4" />
               Seu navegador não suporta vídeos.
             </video>
-          </div>
-        </div>
-      </div>
-    </section>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

@@ -1,25 +1,28 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { AppBar, Toolbar, Box, Typography, Avatar, Stack, IconButton, Tooltip } from '@mui/material';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
 export default function Header({ user }) {
-  const userName = user ? user.nomeCompleto?.split(' ')[0] : "Usuário";
+  const userName = user ? user.nomeCompleto?.split(' ')[0] : 'Usuário';
   const userRole = user && user.cargo ? user.cargo : (user && user.tipoUsuario === 'Funcionario' ? 'Funcionário' : '');
 
   return (
-    <Box sx={{ 
-      height: 70, 
-      bgcolor: 'background.paper', 
-      borderBottom: 1, 
-      borderColor: 'divider', 
-      display: 'flex', 
-      alignItems: 'center', 
-      px: 4
-    }}>
-      <Box sx={{ flexGrow: 1 }} />
-      <Typography variant="subtitle1" color="text.secondary">
-        Bem-vindo(a) de volta, <strong>{userName}!</strong>
-        {userRole && <span style={{ marginLeft: 8, color: '#888', fontSize: 14 }}>({userRole})</span>}
-      </Typography>
-    </Box>
+    <AppBar position="sticky" elevation={0}>
+      <Toolbar sx={{ minHeight: 70, display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h6" sx={{ fontWeight: 700 }}>Painel Administrativo</Typography>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <ThemeToggle />
+          <Box sx={{ textAlign: 'right' }}>
+            <Typography variant="subtitle2">Bem-vindo(a), <strong>{userName}</strong></Typography>
+            {userRole && (
+              <Typography variant="caption" color="text.secondary">{userRole}</Typography>
+            )}
+          </Box>
+          <Tooltip title={user?.nomeCompleto || 'Usuário'}>
+            <Avatar sx={{ width: 40, height: 40 }} src={user?.fotoPerfil} />
+          </Tooltip>
+        </Stack>
+      </Toolbar>
+    </AppBar>
   );
 }

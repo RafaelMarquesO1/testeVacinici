@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box, Typography, Grid, Paper, Avatar, List, ListItem, ListItemAvatar, ListItemText, useTheme
+  Box, Typography, Grid, Avatar, List, ListItem, ListItemAvatar, ListItemText, useTheme, Skeleton, Paper, FormControl, InputLabel, Select, MenuItem, Button, Stack, Chip
 } from '@mui/material';
+import StatCard from '../components/dashboard/StatCard';
+import RecentActivityTable from '../components/dashboard/RecentActivityTable';
 import { People, PersonAdd, Group, TrendingUp, Vaccines, LocationOn } from '@mui/icons-material';
 import { api } from '../services/api';
 
@@ -15,10 +17,10 @@ const activities = [
 export default function DashboardPage() {
   const theme = useTheme();
   const [stats, setStats] = useState([
-    { icon: <People fontSize="large" color="primary" />, title: "Total de Pacientes", value: "0" },
-    { icon: <Group fontSize="large" color="primary" />, title: "Total de Funcionários", value: "0" },
-    { icon: <Vaccines fontSize="large" color="primary" />, title: "Total de Vacinas", value: "0" },
-    { icon: <LocationOn fontSize="large" color="primary" />, title: "Locais de Vacinação", value: "0" }
+    { icon: <People fontSize="large" color="primary" />, title: "Total de Pacientes", value: null },
+    { icon: <Group fontSize="large" color="primary" />, title: "Total de Funcionários", value: null },
+    { icon: <Vaccines fontSize="large" color="primary" />, title: "Total de Vacinas", value: null },
+    { icon: <LocationOn fontSize="large" color="primary" />, title: "Locais de Vacinação", value: null }
   ]);
 
   useEffect(() => {
@@ -69,66 +71,54 @@ export default function DashboardPage() {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: theme.palette.primary.main }}>
-        Gerenciamento de Usuários
-      </Typography>
+      {/* Header do Dashboard */}
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: theme.palette.primary.main }}>
+            Dashboard
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Visão geral do sistema e indicadores principais
+          </Typography>
+        </Box>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <FormControl size="small">
+            <InputLabel id="periodo-label">Período</InputLabel>
+            <Select labelId="periodo-label" label="Período" defaultValue="30d" sx={{ minWidth: 140 }}>
+              <MenuItem value="7d">Últimos 7 dias</MenuItem>
+              <MenuItem value="30d">Últimos 30 dias</MenuItem>
+              <MenuItem value="90d">Últimos 90 dias</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="contained" color="secondary">Atualizar</Button>
+        </Stack>
+      </Box>
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {stats.map((stat, i) => (
           <Grid item xs={12} sm={6} md={3} key={i}>
-            <Paper
-              elevation={4}
-              sx={{
-                p: 3,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2,
-                borderRadius: 3,
-                background: 'linear-gradient(120deg, #fff 80%, #e3eafc 100%)',
-                boxShadow: '0 4px 32px 0 rgba(60,72,100,0.10)'
-              }}
-            >
-              <Avatar
-                sx={{
-                  bgcolor: theme.palette.primary.light,
-                  width: 60,
-                  height: 60,
-                  color: theme.palette.primary.main,
-                  fontSize: 32,
-                  border: `2px solid ${theme.palette.divider}`
-                }}
-              >
-                {stat.icon}
-              </Avatar>
-              <Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{stat.title}</Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>{stat.value}</Typography>
-                {stat.change && (
-                  <Typography variant="caption" color="success.main" sx={{ fontWeight: 500 }}>
-                    {stat.change}
-                  </Typography>
-                )}
-              </Box>
-            </Paper>
+            <StatCard
+              icon={stat.icon}
+              title={stat.title}
+              value={stat.value ?? <Skeleton variant="text" width={80} height={36} />}
+              change={stat.change}
+              color={i % 2 === 0 ? 'primary' : 'secondary'}
+            />
           </Grid>
         ))}
       </Grid>
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 3, background: 'linear-gradient(120deg, #fff 90%, #e3eafc 100%)' }}>
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: theme.palette.primary.main }}>
-          Atividade Recente
-        </Typography>
-        <List>
-          {activities.map((activity, i) => (
-            <ListItem key={i} divider={i < activities.length - 1}>
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: theme.palette.primary.main, color: '#fff' }}>
-                  <TrendingUp />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={activity.desc} secondary={activity.time} />
-            </ListItem>
-          ))}
-        </List>
-      </Paper>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <RecentActivityTable rows={activities.map(a => ({
+            desc: a.desc,
+            time: a.time,
+            icon: (
+              <Avatar sx={{ width: 28, height: 28 }}>
+                <TrendingUp fontSize="small" />
+              </Avatar>
+            )
+          }))} />
+        </Grid>
+      </Grid>
     </Box>
   );
 }

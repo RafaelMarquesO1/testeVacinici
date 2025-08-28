@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Avatar, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-  Tabs, Tab, Snackbar, Alert, CircularProgress, useTheme
+  Tabs, Tab, Snackbar, Alert, CircularProgress, useTheme, Chip, FormControlLabel, Switch, MenuItem, Select, InputLabel, FormControl, Tooltip
 } from '@mui/material';
 import { Add, Edit, Delete, Visibility } from '@mui/icons-material';
 import { api } from '../services/api';
@@ -45,18 +45,19 @@ function UserForm({ open, onClose, onSubmit, initialData, isStaff }) {
           />
           <TextField label="Data de Nascimento" name="dataNascimento" type="date" value={form.dataNascimento || ''} onChange={handleChange} fullWidth InputLabelProps={{ shrink: true }} />
           <TextField label="Gênero" name="genero" value={form.genero || ''} onChange={handleChange} fullWidth />
-          <TextField
-            select
-            label="Tipo de Usuário"
-            name="tipoUsuario"
-            value={form.tipoUsuario || (isStaff ? 'Funcionario' : 'Paciente')}
-            onChange={handleChange}
-            SelectProps={{ native: true }}
-            fullWidth
-          >
-            <option value="Paciente">Paciente</option>
-            <option value="Funcionario">Funcionário</option>
-          </TextField>
+          <FormControl fullWidth>
+            <InputLabel id="tipo-usuario-label">Tipo de Usuário</InputLabel>
+            <Select
+              labelId="tipo-usuario-label"
+              label="Tipo de Usuário"
+              name="tipoUsuario"
+              value={form.tipoUsuario || (isStaff ? 'Funcionario' : 'Paciente')}
+              onChange={handleChange}
+            >
+              <MenuItem value="Paciente">Paciente</MenuItem>
+              <MenuItem value="Funcionario">Funcionário</MenuItem>
+            </Select>
+          </FormControl>
           {form.tipoUsuario === 'Funcionario' && (
             <TextField label="Cargo" name="cargo" value={form.cargo || ''} onChange={handleChange} fullWidth />
           )}
@@ -101,6 +102,7 @@ export default function UsersPage() {
   const [tab, setTab] = useState(0);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dense, setDense] = useState(false);
   const [selected, setSelected] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -205,27 +207,30 @@ export default function UsersPage() {
       <Typography variant="h4" sx={{ mb: 2, fontWeight: 700, color: theme.palette.primary.main }}>
         Usuários do Sistema
       </Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
         <Tabs value={tab} onChange={handleTabChange} sx={{ minHeight: 48 }}>
           <Tab label="Pacientes" sx={{ fontWeight: 600, fontSize: '1rem' }} />
           <Tab label="Funcionários" sx={{ fontWeight: 600, fontSize: '1rem' }} />
         </Tabs>
-        <Button variant="contained" startIcon={<Add />} onClick={handleAdd} sx={{ borderRadius: 2, fontWeight: 700 }}>
-          Adicionar Novo
-        </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <FormControlLabel control={<Switch checked={dense} onChange={(_, v) => setDense(v)} />} label="Denso" />
+          <Button variant="contained" startIcon={<Add />} onClick={handleAdd} sx={{ borderRadius: 2, fontWeight: 700 }}>
+            Adicionar Novo
+          </Button>
+        </Box>
       </Box>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
         <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 4px 32px 0 rgba(60,72,100,0.10)' }}>
-          <Table>
+          <Table size={dense ? 'small' : 'medium'} aria-label="Tabela de usuários">
             <TableHead>
               <TableRow>
                 <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main }}>Nome</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main }}>Email</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main }}>CPF</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main }}>Data de Nascimento</TableCell>
-                {tab === 1 && <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main }}>Cargo</TableCell>}
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main, display: { xs: 'none', md: 'table-cell' } }}>Email</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main, display: { xs: 'none', md: 'table-cell' } }}>CPF</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main, display: { xs: 'none', lg: 'table-cell' } }}>Data de Nascimento</TableCell>
+                {tab === 1 && <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main, display: { xs: 'none', lg: 'table-cell' } }}>Cargo</TableCell>}
                 <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main }}>Ações</TableCell>
               </TableRow>
             </TableHead>
@@ -235,17 +240,20 @@ export default function UsersPage() {
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Avatar src={user.fotoPerfil} sx={{ border: '2px solid #e3eafc' }} />
-                      <Typography fontWeight={600}>{user.nomeCompleto}</Typography>
+                      <Box>
+                        <Typography fontWeight={600}>{user.nomeCompleto}</Typography>
+                        <Chip size="small" label={user.tipoUsuario === 'Funcionario' ? 'Funcionário' : 'Paciente'} color={user.tipoUsuario === 'Funcionario' ? 'secondary' : 'default'} sx={{ mt: 0.5, display: { md: 'none' } }} />
+                      </Box>
                     </Box>
                   </TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.cpf}</TableCell>
-                  <TableCell>{user.dataNascimento}</TableCell>
-                  {tab === 1 && <TableCell>{user.cargo}</TableCell>}
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{user.email}</TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{user.cpf}</TableCell>
+                  <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>{user.dataNascimento}</TableCell>
+                  {tab === 1 && <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>{user.cargo}</TableCell>}
                   <TableCell>
-                    <IconButton onClick={() => { setSelected(user); setDetailOpen(true); }} color="info"><Visibility /></IconButton>
-                    <IconButton onClick={() => handleEdit(user)} color="primary"><Edit /></IconButton>
-                    <IconButton onClick={() => handleDelete(user)} color="error"><Delete /></IconButton>
+                    <Tooltip title="Ver detalhes"><IconButton aria-label={`ver detalhes de ${user.nomeCompleto}`} onClick={() => { setSelected(user); setDetailOpen(true); }} color="info"><Visibility /></IconButton></Tooltip>
+                    <Tooltip title="Editar"><IconButton aria-label={`editar ${user.nomeCompleto}`} onClick={() => handleEdit(user)} color="primary"><Edit /></IconButton></Tooltip>
+                    <Tooltip title="Excluir"><IconButton aria-label={`excluir ${user.nomeCompleto}`} onClick={() => handleDelete(user)} color="error"><Delete /></IconButton></Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

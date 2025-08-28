@@ -1,16 +1,18 @@
 import React from 'react';
-import { Box, Typography, Link, IconButton, Stack } from '@mui/material';
+import { Box, Typography, Link, IconButton, Stack, useTheme } from '@mui/material';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
 
 const Footer = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   return (
     <Box
       component="footer"
       sx={{
-        bgcolor: '#c3dcb7',
-        color: '#23293a',
+        bgcolor: isDark ? '#0F2A18' : '#D1FAE5',
+        color: isDark ? '#E7F7EE' : '#052E16',
         py: 5,
         px: { xs: 2, md: 8 },
         mt: 8,
@@ -30,7 +32,7 @@ const Footer = () => {
         }}
       >
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
             Sobre nós
           </Typography>
           <Stack spacing={1}>
@@ -40,17 +42,17 @@ const Footer = () => {
           </Stack>
         </Box>
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
             Acompanhe a gente
           </Typography>
           <Stack direction="row" spacing={2} mt={1}>
-            <IconButton href="https://instagram.com" target="_blank" color="primary" sx={{ bgcolor: '#fff', borderRadius: 2 }}>
+            <IconButton href="https://instagram.com" target="_blank" color="primary" sx={{ bgcolor: isDark ? 'background.paper' : '#fff', borderRadius: 2 }}>
               <InstagramIcon />
             </IconButton>
-            <IconButton href="https://facebook.com" target="_blank" color="primary" sx={{ bgcolor: '#fff', borderRadius: 2 }}>
+            <IconButton href="https://facebook.com" target="_blank" color="primary" sx={{ bgcolor: isDark ? 'background.paper' : '#fff', borderRadius: 2 }}>
               <FacebookIcon />
             </IconButton>
-            <IconButton href="https://twitter.com" target="_blank" color="primary" sx={{ bgcolor: '#fff', borderRadius: 2 }}>
+            <IconButton href="https://twitter.com" target="_blank" color="primary" sx={{ bgcolor: isDark ? 'background.paper' : '#fff', borderRadius: 2 }}>
               <TwitterIcon />
             </IconButton>
           </Stack>
