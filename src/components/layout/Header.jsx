@@ -1,8 +1,9 @@
 import React from 'react';
-import { AppBar, Toolbar, Box, Typography, Avatar, Stack, IconButton, Tooltip } from '@mui/material';
+import { AppBar, Toolbar, Box, Typography, Avatar, Stack, IconButton, Tooltip, Button } from '@mui/material';
+import Logout from '@mui/icons-material/Logout';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
-export default function Header({ user }) {
+export default function Header({ user, onLogout }) {
   const userName = user ? user.nomeCompleto?.split(' ')[0] : 'Usuário';
   const userRole = user && user.cargo ? user.cargo : (user && user.tipoUsuario === 'Funcionario' ? 'Funcionário' : '');
 
@@ -21,6 +22,10 @@ export default function Header({ user }) {
           <Tooltip title={user?.nomeCompleto || 'Usuário'}>
             <Avatar sx={{ width: 40, height: 40 }} src={user?.fotoPerfil} />
           </Tooltip>
+          <Button onClick={onLogout} variant="outlined" color="error" size="small" startIcon={<Logout />}
+            sx={{ borderRadius: 2 }}>
+            Sair
+          </Button>
         </Stack>
       </Toolbar>
     </AppBar>

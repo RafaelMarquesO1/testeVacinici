@@ -41,7 +41,7 @@ export default function DashboardLayout() {
           minHeight: '100vh',
         }}
       >
-        <Header user={currentUser} />
+        <Header user={currentUser} onLogout={triggerLogout} />
         <Box sx={{ px: { xs: 2, md: 3 }, pt: 2 }}>
           <Tabs value={tabValue} onChange={(_, v) => navigate(v === 0 ? '/admin/dashboard' : '/admin/usuarios')} textColor="primary" indicatorColor="primary" sx={{ mb: 1 }}>
             <Tab label="Dashboard" />

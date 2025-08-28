@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Avatar, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-  Tabs, Tab, Snackbar, Alert, CircularProgress, useTheme, Chip, FormControlLabel, Switch, MenuItem, Select, InputLabel, FormControl, Tooltip
+  Tabs, Tab, Snackbar, Alert, CircularProgress, useTheme, Chip, FormControlLabel, Switch, MenuItem, Select, InputLabel, FormControl, Tooltip, Divider, Grid
 } from '@mui/material';
-import { Add, Edit, Delete, Visibility } from '@mui/icons-material';
+import { Add, Edit, Delete, Visibility, Close, Save, Person, Email, Phone, Badge, CalendarMonth, Wc, Work } from '@mui/icons-material';
 import { api } from '../services/api';
 
 function UserForm({ open, onClose, onSubmit, initialData, isStaff }) {
@@ -27,46 +27,72 @@ function UserForm({ open, onClose, onSubmit, initialData, isStaff }) {
   const handleSubmit = () => onSubmit(form);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ fontWeight: 700 }}>{form.id ? 'Editar Usuário' : 'Novo Usuário'}</DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField label="Nome Completo" name="nomeCompleto" value={form.nomeCompleto || ''} onChange={handleChange} fullWidth required />
-          <TextField label="Email" name="email" value={form.email || ''} onChange={handleChange} fullWidth required />
-          <TextField label="Telefone" name="telefone" value={form.telefone || ''} onChange={handleChange} fullWidth />
-          <TextField 
-            label="CPF" 
-            name="cpf" 
-            value={form.cpf || ''} 
-            onChange={handleChange} 
-            fullWidth 
-            placeholder="000.000.000-00"
-            inputProps={{ maxLength: 14 }}
-          />
-          <TextField label="Data de Nascimento" name="dataNascimento" type="date" value={form.dataNascimento || ''} onChange={handleChange} fullWidth InputLabelProps={{ shrink: true }} />
-          <TextField label="Gênero" name="genero" value={form.genero || ''} onChange={handleChange} fullWidth />
-          <FormControl fullWidth>
-            <InputLabel id="tipo-usuario-label">Tipo de Usuário</InputLabel>
-            <Select
-              labelId="tipo-usuario-label"
-              label="Tipo de Usuário"
-              name="tipoUsuario"
-              value={form.tipoUsuario || (isStaff ? 'Funcionario' : 'Paciente')}
-              onChange={handleChange}
-            >
-              <MenuItem value="Paciente">Paciente</MenuItem>
-              <MenuItem value="Funcionario">Funcionário</MenuItem>
-            </Select>
-          </FormControl>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+      <DialogTitle sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {form.id ? 'Editar Usuário' : 'Novo Usuário'}
+        <IconButton onClick={onClose} aria-label="fechar">
+          <Close />
+        </IconButton>
+      </DialogTitle>
+      <Divider />
+      <DialogContent sx={{ pt: 3 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <TextField label="Nome Completo" name="nomeCompleto" value={form.nomeCompleto || ''} onChange={handleChange} fullWidth required InputProps={{ startAdornment: <Person sx={{ mr: 1, color: 'text.secondary' }} /> }} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField label="Email" name="email" value={form.email || ''} onChange={handleChange} fullWidth required InputProps={{ startAdornment: <Email sx={{ mr: 1, color: 'text.secondary' }} /> }} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField label="Telefone" name="telefone" value={form.telefone || ''} onChange={handleChange} fullWidth InputProps={{ startAdornment: <Phone sx={{ mr: 1, color: 'text.secondary' }} /> }} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField 
+              label="CPF" 
+              name="cpf" 
+              value={form.cpf || ''} 
+              onChange={handleChange} 
+              fullWidth 
+              placeholder="000.000.000-00"
+              inputProps={{ maxLength: 14 }}
+              InputProps={{ startAdornment: <Badge sx={{ mr: 1, color: 'text.secondary' }} /> }}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField label="Data de Nascimento" name="dataNascimento" type="date" value={form.dataNascimento || ''} onChange={handleChange} fullWidth InputLabelProps={{ shrink: true }} InputProps={{ startAdornment: <CalendarMonth sx={{ mr: 1, color: 'text.secondary' }} /> }} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField label="Gênero" name="genero" value={form.genero || ''} onChange={handleChange} fullWidth InputProps={{ startAdornment: <Wc sx={{ mr: 1, color: 'text.secondary' }} /> }} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel id="tipo-usuario-label">Tipo de Usuário</InputLabel>
+              <Select
+                labelId="tipo-usuario-label"
+                label="Tipo de Usuário"
+                name="tipoUsuario"
+                value={form.tipoUsuario || (isStaff ? 'Funcionario' : 'Paciente')}
+                onChange={handleChange}
+              >
+                <MenuItem value="Paciente">Paciente</MenuItem>
+                <MenuItem value="Funcionario">Funcionário</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
           {form.tipoUsuario === 'Funcionario' && (
-            <TextField label="Cargo" name="cargo" value={form.cargo || ''} onChange={handleChange} fullWidth />
+            <Grid item xs={12} md={6}>
+              <TextField label="Cargo" name="cargo" value={form.cargo || ''} onChange={handleChange} fullWidth InputProps={{ startAdornment: <Work sx={{ mr: 1, color: 'text.secondary' }} /> }} />
+            </Grid>
           )}
-          <TextField label="Senha" name="senha" type="password" value={form.senha || ''} onChange={handleChange} fullWidth required />
-        </Box>
+          <Grid item xs={12} md={6}>
+            <TextField label="Senha" name="senha" type="password" value={form.senha || ''} onChange={handleChange} fullWidth required />
+          </Grid>
+        </Grid>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained">Salvar</Button>
+      <Divider />
+      <DialogActions sx={{ p: 2.5 }}>
+        <Button onClick={onClose} startIcon={<Close />}>Cancelar</Button>
+        <Button onClick={handleSubmit} variant="contained" startIcon={<Save />}>Salvar</Button>
       </DialogActions>
     </Dialog>
   );
@@ -75,23 +101,57 @@ function UserForm({ open, onClose, onSubmit, initialData, isStaff }) {
 function UserDetailDialog({ open, user, onClose }) {
   if (!user) return null;
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ fontWeight: 700 }}>Detalhes de {user.nomeCompleto}</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+      <DialogTitle sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        Detalhes do Usuário
+        <IconButton onClick={onClose} aria-label="fechar">
+          <Close />
+        </IconButton>
+      </DialogTitle>
+      <Divider />
+      <DialogContent sx={{ pt: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <Avatar src={user.fotoPerfil} sx={{ width: 56, height: 56, border: '2px solid #e3eafc' }} />
-          <Typography variant="h6" fontWeight={700}>{user.nomeCompleto}</Typography>
+          <Avatar src={user.fotoPerfil} sx={{ width: 64, height: 64, border: '2px solid #e3eafc' }} />
+          <Box>
+            <Typography variant="h6" fontWeight={800}>{user.nomeCompleto}</Typography>
+            <Chip size="small" label={user.tipoUsuario === 'Funcionario' ? 'Funcionário' : 'Paciente'} color={user.tipoUsuario === 'Funcionario' ? 'secondary' : 'default'} sx={{ mt: 0.5 }} />
+          </Box>
         </Box>
-        <Typography><b>Email:</b> {user.email}</Typography>
-        <Typography><b>Telefone:</b> {user.telefone}</Typography>
-        <Typography><b>CPF:</b> {user.cpf}</Typography>
-        <Typography><b>Nascimento:</b> {user.dataNascimento}</Typography>
-        <Typography><b>Gênero:</b> {user.genero}</Typography>
-        <Typography><b>Tipo:</b> {user.tipoUsuario}</Typography>
-        {user.cargo && <Typography><b>Cargo:</b> {user.cargo}</Typography>}
+        <Grid container spacing={1.5}>
+          <Grid item xs={12}>
+            <Divider sx={{ my: 1 }} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="caption" color="text.secondary">Email</Typography>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Email fontSize="small" />{user.email}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="caption" color="text.secondary">Telefone</Typography>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Phone fontSize="small" />{user.telefone || '-'}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="caption" color="text.secondary">CPF</Typography>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Badge fontSize="small" />{user.cpf}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="caption" color="text.secondary">Nascimento</Typography>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><CalendarMonth fontSize="small" />{user.dataNascimento}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="caption" color="text.secondary">Gênero</Typography>
+            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Wc fontSize="small" />{user.genero || '-'}</Typography>
+          </Grid>
+          {user.cargo && (
+            <Grid item xs={12} sm={6}>
+              <Typography variant="caption" color="text.secondary">Cargo</Typography>
+              <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Work fontSize="small" />{user.cargo}</Typography>
+            </Grid>
+          )}
+        </Grid>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Fechar</Button>
+      <Divider />
+      <DialogActions sx={{ p: 2.5 }}>
+        <Button onClick={onClose} variant="contained">Fechar</Button>
       </DialogActions>
     </Dialog>
   );

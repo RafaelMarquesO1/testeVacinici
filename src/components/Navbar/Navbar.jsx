@@ -17,8 +17,6 @@ const Navbar = () => {
 
           <Stack direction="row" spacing={1.5} sx={{ display: { xs: "none", md: "flex" } }}>
             <Button href="/" variant="text" color="inherit" sx={{ px: 2 }}>Início</Button>
-            <Button href="#sobre" variant="text" color="inherit" sx={{ px: 2 }}>Sobre</Button>
-            <Button href="#contato" variant="text" color="inherit" sx={{ px: 2 }}>Contato</Button>
             <Button href="/entrar" variant="contained" color="secondary" sx={{ ml: 1 }}>Entrar</Button>
           </Stack>
 
