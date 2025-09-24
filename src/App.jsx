@@ -1,4 +1,16 @@
 import React from "react";
+import { useAuth } from './contexts/AuthContext';
+// Componente para redirecionar admin/enfermeiro corretamente
+function AdminRedirect() {
+  const { currentUser } = useAuth();
+  if (currentUser?.tipoUsuario === 'Funcionario' && currentUser?.cargo?.toLowerCase().includes('enfermeir')) {
+    return <Navigate to="agendamentos" replace />;
+  } else if (currentUser?.tipoUsuario === 'Funcionario' && currentUser?.cargo?.toLowerCase().includes('admin')) {
+    return <Navigate to="usuarios" replace />;
+  } else {
+    return <Navigate to="/entrar" replace />;
+  }
+}
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -12,6 +24,8 @@ import DashboardLayout from "./components/layout/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute"; 
 import DashboardPage from "./pages/DashboardPage"; 
 import UsersPage from "./pages/UsersPage";
+import AgendamentosPage from "./pages/AgendamentosPage";
+import AdminOverviewPage from "./pages/AdminOverviewPage";
 
 const PublicLayout = ({ children }) => (
   <div>
@@ -41,9 +55,13 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="usuarios" element={<UsersPage />} />
+          {/* Redirecionamento inteligente para admin ou enfermeiro */}
+          <Route index element={<AdminRedirect />} />
+          {/* Apenas admin pode acessar controle geral e usuários */}
+          <Route path="controle" element={<ProtectedRoute><AdminOverviewPage /></ProtectedRoute>} />
+          <Route path="usuarios" element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
+          {/* Apenas enfermeiro pode acessar agendamentos */}
+          <Route path="agendamentos" element={<ProtectedRoute><AgendamentosPage /></ProtectedRoute>} />
         </Route>
         
         {/* Redirecionamentos e 404 */}

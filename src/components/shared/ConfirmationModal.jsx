@@ -1,5 +1,6 @@
 import React from 'react';
-import { X, AlertTriangle } from 'lucide-react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, IconButton, Box } from '@mui/material';
+import { WarningAmber, Close } from '@mui/icons-material';
 // Importaremos o CSS do Dashboard que conterá os estilos do modal
 // import '../../styles/Dashboard.css'; // Ajuste o caminho se a estrutura for diferente
 
@@ -11,40 +12,25 @@ export default function ConfirmationModal({
   message = "Você tem certeza que deseja prosseguir com esta ação?",
   confirmText = "Confirmar",
   cancelText = "Cancelar",
-  icon, // Opcional: um ícone para o modal
-  isDestructive = false // Para estilizar o botão de confirmação como destrutivo (vermelho)
+  icon,
+  isDestructive = false
 }) {
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <div className="modal-header-content">
-            {icon ? React.cloneElement(icon, { size: 22, className: 'modal-title-icon' }) : (isDestructive && <AlertTriangle size={22} className="modal-title-icon destructive" />)}
-            <h3 className="modal-title">{title}</h3>
-          </div>
-          <button onClick={onClose} className="modal-close-btn">
-            <X size={20} />
-          </button>
-        </div>
-        <div className="modal-body">
-          <p>{message}</p>
-        </div>
-        <div className="modal-footer">
-          <button onClick={onClose} className="btn btn-secondary">
-            {cancelText}
-          </button>
-          <button 
-            onClick={onConfirm} 
-            className={`btn ${isDestructive ? 'btn-danger' : 'btn-primary'}`}
-          >
-            {confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
+    <Dialog open={isOpen} onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 900 }}>
+        {icon ? icon : (isDestructive && <WarningAmber color="error" sx={{ fontSize: 28 }} />)}
+        <Typography component="span" sx={{ fontWeight: 700 }}>{title}</Typography>
+        <IconButton onClick={onClose} sx={{ marginLeft: 'auto' }}>
+          <Close />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent>
+        <Typography variant="body1" color="text.secondary">{message}</Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary" variant="outlined">{cancelText}</Button>
+        <Button onClick={onConfirm} variant="contained" color={isDestructive ? 'error' : 'primary'}>{confirmText}</Button>
+      </DialogActions>
+    </Dialog>
   );
 }

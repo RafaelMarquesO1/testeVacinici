@@ -37,8 +37,14 @@ export default function Login() {
     
     try {
       console.log('Tentando fazer login com:', email);
-      await login(email, password);
-      navigate('/admin/dashboard');
+      const user = await login(email, password);
+      if (user?.tipoUsuario === 'Funcionario' && user?.cargo?.toLowerCase().includes('admin')) {
+        navigate('/admin/usuarios');
+      } else if (user?.tipoUsuario === 'Funcionario' && user?.cargo?.toLowerCase().includes('enfermeir')) {
+        navigate('/admin/agendamentos');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       console.log('Erro capturado no login:', err);
       console.log('Mensagem do erro:', err.message);

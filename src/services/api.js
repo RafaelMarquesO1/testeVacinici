@@ -429,6 +429,42 @@ export const api = {
     return res.status === 204 ? {} : res.json();
   },
 
+  // Agendamentos
+  getAgendamentos: async () => {
+    const res = await fetch('http://localhost:8080/api/agendamentos');
+    return res.json();
+  },
+  getAgendamentoById: async (id) => {
+    const res = await fetch(`http://localhost:8080/api/agendamentos/${id}`);
+    return res.json();
+  },
+  createAgendamento: async (agendamento) => {
+    const res = await fetch('http://localhost:8080/api/agendamentos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(agendamento)
+    });
+    return res.json();
+  },
+  updateAgendamentoStatus: async (id, status, dose) => {
+    const body = dose !== undefined ? { status, dose } : { status };
+    const res = await fetch(`http://localhost:8080/api/agendamentos/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return res.json();
+  },
+  deleteAgendamento: async (id) => {
+    const res = await fetch(`http://localhost:8080/api/agendamentos/${id}`, { 
+      method: 'DELETE' 
+    });
+    if (!res.ok) {
+      throw new Error(`Erro ao deletar agendamento: ${res.status}`);
+    }
+    return res.status === 204 ? {} : res.json();
+  },
+
   // Login
   login: async (email, senha) => {
     const response = await fetch('http://localhost:8080/api/auth/login', {

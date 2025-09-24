@@ -1,14 +1,15 @@
 // src/components/shared/RegisterVaccinationModal.jsx
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, Syringe as SyringeIcon } from 'lucide-react'; // Usando SyringeIcon aqui também
+import { Dialog, DialogTitle, DialogContent, DialogActions, Grid, TextField, Button, MenuItem, Typography, IconButton, Box } from '@mui/material';
+import { Vaccines, Close, Save } from '@mui/icons-material';
 
 export default function RegisterVaccinationModal({
   isOpen,
   onClose,
   onSubmit,
   patientName,
-  availableVaccines // Lista de vacinas disponíveis para o select: [{id: 'vac_001', name: 'Coronavac'}, ...]
+  availableVaccines
 }) {
   const today = new Date().toISOString().split('T')[0]; // Formato AAAA-MM-DD
 
@@ -32,9 +33,7 @@ export default function RegisterVaccinationModal({
     }
   }, [isOpen, availableVaccines]); // Adicionado availableVaccines como dependência
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,123 +66,100 @@ export default function RegisterVaccinationModal({
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box form-modal" onClick={(e) => e.stopPropagation()}> {/* Adicionada classe form-modal */}
-        <div className="modal-header">
-          <div className="modal-header-content">
-            <SyringeIcon size={22} className="modal-title-icon" />
-            <h3 className="modal-title">Registrar Vacinação para {patientName}</h3>
-          </div>
-          <button onClick={onClose} className="modal-close-btn">
-            <X size={20} />
-          </button>
-        </div>
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body modal-body-form"> {/* Classe para customizar padding/scroll se necessário */}
-            <div className="custom-form"> {/* Reutilizando estilos de formulário */}
-              <div className="form-grid-2-cols"> {/* Layout em duas colunas */}
-                {/* Coluna 1 */}
-                <div className="form-column">
-                  <div className="form-group">
-                    <label htmlFor="vaccineId">Vacina <span className="required-asterisk">*</span></label>
-                    <select
-                      id="vaccineId"
-                      name="vaccineId"
-                      value={formData.vaccineId}
-                      onChange={handleChange}
-                      className={formErrors.vaccineId ? 'input-error' : ''}
-                    >
-                      <option value="" disabled>Selecione uma vacina</option>
-                      {availableVaccines.map(vaccine => (
-                        <option key={vaccine.id} value={vaccine.id}>{vaccine.name}</option>
-                      ))}
-                    </select>
-                    {formErrors.vaccineId && <span className="error-message">{formErrors.vaccineId}</span>}
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="dose">Dose <span className="required-asterisk">*</span></label>
-                    <input
-                      type="text"
-                      id="dose"
-                      name="dose"
-                      value={formData.dose}
-                      onChange={handleChange}
-                      placeholder="Ex: 1ª Dose, Reforço"
-                      className={formErrors.dose ? 'input-error' : ''}
-                    />
-                    {formErrors.dose && <span className="error-message">{formErrors.dose}</span>}
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="batch">Lote <span className="required-asterisk">*</span></label>
-                    <input
-                      type="text"
-                      id="batch"
-                      name="batch"
-                      value={formData.batch}
-                      onChange={handleChange}
-                      className={formErrors.batch ? 'input-error' : ''}
-                    />
-                    {formErrors.batch && <span className="error-message">{formErrors.batch}</span>}
-                  </div>
-                </div>
-
-                {/* Coluna 2 */}
-                <div className="form-column">
-                  <div className="form-group">
-                    <label htmlFor="dateApplied">Data da Aplicação <span className="required-asterisk">*</span></label>
-                    <input
-                      type="date"
-                      id="dateApplied"
-                      name="dateApplied"
-                      value={formData.dateApplied}
-                      onChange={handleChange}
-                      max={today} // Não permite datas futuras
-                      className={formErrors.dateApplied ? 'input-error' : ''}
-                    />
-                    {formErrors.dateApplied && <span className="error-message">{formErrors.dateApplied}</span>}
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="professional">Profissional Responsável <span className="required-asterisk">*</span></label>
-                    <input
-                      type="text"
-                      id="professional"
-                      name="professional"
-                      value={formData.professional}
-                      onChange={handleChange}
-                      className={formErrors.professional ? 'input-error' : ''}
-                    />
-                    {formErrors.professional && <span className="error-message">{formErrors.professional}</span>}
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="unit">Unidade/Local de Aplicação <span className="required-asterisk">*</span></label>
-                    <input
-                      type="text"
-                      id="unit"
-                      name="unit"
-                      value={formData.unit}
-                      onChange={handleChange}
-                      className={formErrors.unit ? 'input-error' : ''}
-                    />
-                    {formErrors.unit && <span className="error-message">{formErrors.unit}</span>}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose}>
-              Cancelar
-            </button>
-            <button type="submit" className="btn btn-primary">
-              <Save size={18} /> Registrar Vacinação
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 900 }}>
+        <Vaccines color="success" sx={{ fontSize: 28 }} />
+        Registrar Vacinação para <Box component="span" sx={{ fontWeight: 700, ml: 1 }}>{patientName}</Box>
+        <IconButton onClick={onClose} sx={{ marginLeft: 'auto' }}>
+          <Close />
+        </IconButton>
+      </DialogTitle>
+      <form onSubmit={handleSubmit}>
+        <DialogContent dividers>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                label="Vacina *"
+                name="vaccineId"
+                value={formData.vaccineId}
+                onChange={handleChange}
+                fullWidth
+                error={!!formErrors.vaccineId}
+                helperText={formErrors.vaccineId}
+              >
+                <MenuItem value="" disabled>Selecione uma vacina</MenuItem>
+                {availableVaccines.map(vaccine => (
+                  <MenuItem key={vaccine.id} value={vaccine.id}>{vaccine.name}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Dose *"
+                name="dose"
+                value={formData.dose}
+                onChange={handleChange}
+                placeholder="Ex: 1ª Dose, Reforço"
+                fullWidth
+                error={!!formErrors.dose}
+                helperText={formErrors.dose}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Lote *"
+                name="batch"
+                value={formData.batch}
+                onChange={handleChange}
+                fullWidth
+                error={!!formErrors.batch}
+                helperText={formErrors.batch}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Data da Aplicação *"
+                name="dateApplied"
+                type="date"
+                value={formData.dateApplied}
+                onChange={handleChange}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ max: today }}
+                error={!!formErrors.dateApplied}
+                helperText={formErrors.dateApplied}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Profissional Responsável *"
+                name="professional"
+                value={formData.professional}
+                onChange={handleChange}
+                fullWidth
+                error={!!formErrors.professional}
+                helperText={formErrors.professional}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Unidade/Local de Aplicação *"
+                name="unit"
+                value={formData.unit}
+                onChange={handleChange}
+                fullWidth
+                error={!!formErrors.unit}
+                helperText={formErrors.unit}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="secondary" variant="outlined">Cancelar</Button>
+          <Button type="submit" variant="contained" color="success" startIcon={<Save />}>Registrar Vacinação</Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 }
