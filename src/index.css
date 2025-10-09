@@ -13,6 +13,25 @@ a{
 }
 
 body{
-    background-color: #fafafa;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     color: #212529;
+    min-height: 100vh;
+}
+
+/* Scrollbar personalizada com tema verde */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f0fdf4;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #22c55e;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #16a34a;
 }
