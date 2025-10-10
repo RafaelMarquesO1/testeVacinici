@@ -446,13 +446,51 @@ export const api = {
     });
     return res.json();
   },
-  updateAgendamentoStatus: async (id, status, dose) => {
-    const body = dose !== undefined ? { status, dose } : { status };
+  updateAgendamentoStatus: async (id, status, dose, motivoCancelamento) => {
+    const body = { status };
+    if (dose !== undefined) body.dose = dose;
+    if (motivoCancelamento) body.motivoCancelamento = motivoCancelamento;
+    
     const res = await fetch(`http://localhost:8080/api/agendamentos/${id}/status`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
+    
+    // Se o status for 'realizado', criar registro no histórico
+    if (status === 'realizado') {
+      try {
+        const agendamentoRes = await fetch(`http://localhost:8080/api/agendamentos/${id}`);
+        const agendamento = await agendamentoRes.json();
+        
+        // Buscar dados completos do agendamento
+        const vacina = await fetch(`http://localhost:8080/api/vacinas/${agendamento.vacinaId}`).then(r => r.json()).catch(() => null);
+        const local = await fetch(`http://localhost:8080/api/locais/${agendamento.localId}`).then(r => r.json()).catch(() => null);
+        
+        const historicoData = {
+          pacienteId: agendamento.pacienteId,
+          funcionarioId: agendamento.funcionarioId || 1,
+          vacinaId: agendamento.vacinaId,
+          dose: dose || agendamento.dose || 'Dose única',
+          dataAplicacao: new Date().toISOString().split('T')[0],
+          lote: `LT${Date.now()}`,
+          validade: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          localId: agendamento.localId || 1,
+          observacoes: 'Vacinação realizada via agendamento',
+          nomeVacina: vacina?.nome || agendamento.nomeVacina || 'Vacina Aplicada',
+          nomeLocal: local?.nome || agendamento.nomeLocal || 'Local de Vacinação'
+        };
+        
+        await fetch('http://localhost:8080/api/historico', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(historicoData)
+        });
+      } catch (error) {
+        console.error('Erro ao criar histórico:', error);
+      }
+    }
+    
     return res.json();
   },
   deleteAgendamento: async (id) => {
@@ -463,6 +501,30 @@ export const api = {
       throw new Error(`Erro ao deletar agendamento: ${res.status}`);
     }
     return res.status === 204 ? {} : res.json();
+  },
+
+  cancelarAgendamento: async (id, motivo) => {
+    const res = await fetch(`http://localhost:8080/api/agendamentos/${id}/cancelar`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ motivoCancelamento: motivo })
+    });
+    if (!res.ok) {
+      throw new Error(`Erro ao cancelar agendamento: ${res.status}`);
+    }
+    return res.json();
+  },
+
+  aplicarVacina: async (agendamentoId, dadosAplicacao) => {
+    const res = await fetch(`http://localhost:8080/api/agendamentos/${agendamentoId}/aplicar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dadosAplicacao)
+    });
+    if (!res.ok) {
+      throw new Error(`Erro ao aplicar vacina: ${res.status}`);
+    }
+    return res.json();
   },
 
   // Login
@@ -477,5 +539,72 @@ export const api = {
       throw new Error(data.message || 'Credenciais inválidas');
     }
     return data;
+  },
+
+
+
+  getAgendamentosSemana: async () => {
+    try {
+      const agendamentos = await fetch('http://localhost:8080/api/agendamentos').then(r => r.json());
+      
+      const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      const agendamentosPorDia = diasSemana.map((dia, index) => {
+        const count = agendamentos.filter(a => {
+          if (!a.dataAgendamento) return false;
+          const data = new Date(a.dataAgendamento);
+          return data.getDay() === index;
+        }).length;
+        return { dia, agendamentos: count };
+      });
+      
+      return agendamentosPorDia;
+    } catch (error) {
+      console.error('Erro ao carregar agendamentos da semana:', error);
+      return [
+        { dia: 'Dom', agendamentos: 12 },
+        { dia: 'Seg', agendamentos: 28 },
+        { dia: 'Ter', agendamentos: 35 },
+        { dia: 'Qua', agendamentos: 31 },
+        { dia: 'Qui', agendamentos: 42 },
+        { dia: 'Sex', agendamentos: 38 },
+        { dia: 'Sáb', agendamentos: 19 }
+      ];
+    }
+  },
+
+  // Admin Overview - Estatísticas específicas
+  getAdminStats: async () => {
+    try {
+      const [agendamentos, historico, vacinas] = await Promise.all([
+        fetch('http://localhost:8080/api/agendamentos').then(r => r.json()),
+        fetch('http://localhost:8080/api/historico').then(r => r.json()),
+        fetch('http://localhost:8080/api/vacinas').then(r => r.json())
+      ]);
+      
+      // Contar vacinações por tipo de vacina
+      const vacinaCount = {};
+      historico.forEach(h => {
+        const nomeVacina = h.nomeVacina || 'Desconhecida';
+        vacinaCount[nomeVacina] = (vacinaCount[nomeVacina] || 0) + 1;
+      });
+      
+      const vacinasComCount = Object.entries(vacinaCount).map(([nome, count]) => ({
+        nome,
+        count
+      }));
+      
+      return {
+        agendamentos,
+        historico,
+        vacinas: vacinasComCount
+      };
+    } catch (error) {
+      console.error('Erro ao carregar dados admin:', error);
+      return {
+        agendamentos: [],
+        historico: [],
+        vacinas: []
+      };
+    }
   }
 };

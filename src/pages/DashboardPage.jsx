@@ -1,113 +1,358 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box, Typography, Grid, Avatar, useTheme, Button, Stack
+  Box, Typography, Grid, Card, CardContent, Container, Chip, Button
 } from '@mui/material';
-import StatCard from '../components/dashboard/StatCard';
-import RecentActivityTable from '../components/dashboard/RecentActivityTable';
-import { People, PersonAdd, Group, TrendingUp, Vaccines, LocationOn } from '@mui/icons-material';
+import { People, Group, Vaccines, CalendarToday, Refresh } from '@mui/icons-material';
 import { api } from '../services/api';
-import ConfirmationModal from '../components/shared/ConfirmationModal';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 
 export default function DashboardPage() {
-  const theme = useTheme();
-  const [stats, setStats] = useState([
-    { icon: <People fontSize="large" color="primary" />, title: "Total de Pacientes", value: null },
-    { icon: <Group fontSize="large" color="primary" />, title: "Total de Funcionários", value: null },
-    { icon: <Vaccines fontSize="large" color="primary" />, title: "Total de Vacinas", value: null },
-    { icon: <LocationOn fontSize="large" color="primary" />, title: "Locais de Vacinação", value: null }
-  ]);
-  const [activities, setActivities] = useState([
-    { desc: 'Sistema Vacinici iniciado com sucesso.', time: "Agora", type: "info", icon: <TrendingUp fontSize="small" /> },
-    { desc: 'Dados carregados do banco SQL Server.', time: "Agora", type: "success", icon: <Vaccines fontSize="small" /> },
-    { desc: 'Dashboard conectado à API.', time: "Agora", type: "success", icon: <Group fontSize="small" /> },
-    { desc: 'Sistema pronto para gerenciamento.', time: "Agora", type: "info", icon: <PersonAdd fontSize="small" /> }
-  ]);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    totalPacientes: 0,
+    totalFuncionarios: 0,
+    totalVacinas: 0,
+    agendamentosHoje: 0
+  });
+  const [chartData, setChartData] = useState({
+    vacinacoesMes: [],
+    tiposVacina: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  const COLORS = ['#065f46', '#047857', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'];
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    
+    // Dados fictícios
+    setStats({
+      totalPacientes: 1247,
+      totalFuncionarios: 23,
+      totalVacinas: 8,
+      agendamentosHoje: 15
+    });
+
+    const vacinacoesMes = [
+      { mes: 'Jan', vacinas: 145 },
+      { mes: 'Fev', vacinas: 178 },
+      { mes: 'Mar', vacinas: 203 },
+      { mes: 'Abr', vacinas: 189 },
+      { mes: 'Mai', vacinas: 234 },
+      { mes: 'Jun', vacinas: 267 },
+      { mes: 'Jul', vacinas: 198 },
+      { mes: 'Ago', vacinas: 221 },
+      { mes: 'Set', vacinas: 256 },
+      { mes: 'Out', vacinas: 289 },
+      { mes: 'Nov', vacinas: 312 },
+      { mes: 'Dez', vacinas: 298 }
+    ];
+
+    const tiposVacina = [
+      { nome: 'COVID-19', valor: 32 },
+      { nome: 'Influenza', valor: 24 },
+      { nome: 'Hepatite B', valor: 18 },
+      { nome: 'BCG', valor: 12 },
+      { nome: 'Febre Amarela', valor: 8 },
+      { nome: 'Tétano', valor: 6 }
+    ];
+
+    setChartData({ vacinacoesMes, tiposVacina });
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        // Aqui você pode adicionar o carregamento real dos dados do backend
-      } catch (error) {
-        setActivities(prev => ([
-          ...prev,
-          { desc: 'Erro ao atualizar dashboard.', time: new Date().toLocaleTimeString(), type: "error", icon: <TrendingUp fontSize="small" /> }
-        ]));
-        console.error('Erro ao carregar dados:', error);
-      }
-      setLoading(false);
-    };
-    loadData();
+    loadDashboardData();
   }, []);
 
-  const handleConfirmAction = (action) => {
-    setPendingAction(() => action);
-    setConfirmOpen(true);
-  };
-  const handleConfirm = () => {
-    if (pendingAction) pendingAction();
-    setConfirmOpen(false);
-    setPendingAction(null);
-  };
-  const handleCancel = () => {
-    setConfirmOpen(false);
-    setPendingAction(null);
-  };
+  if (loading) {
+    return (
+      <Box sx={{ 
+        minHeight: '100vh', 
+        background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <Typography variant="h5" sx={{ color: '#047857' }}>Carregando dashboard...</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'var(--bg-primary)',
-        p: { xs: 1, md: 3 },
-        transition: 'background 0.3s',
-      }}
-    >
-      {/* Header do Dashboard com avatar */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Avatar sx={{ bgcolor: 'var(--primary-color)', width: 56, height: 56, fontWeight: 700, fontSize: 32 }}>V</Avatar>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+      py: 4
+    }}>
+      <Container maxWidth="xl">
+        {/* Header */}
+        <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
-            <Typography variant="h3" sx={{ fontWeight: 900, color: 'var(--primary-color)', letterSpacing: 0.5, fontFamily: 'var(--font-family)' }}>
+            <Chip 
+              label="Sistema de Gestão" 
+              sx={{ 
+                mb: 2, 
+                fontWeight: 700,
+                backgroundColor: '#dcfce7',
+                color: '#065f46'
+              }} 
+            />
+            <Typography 
+              variant="h2" 
+              sx={{ 
+                fontWeight: 800, 
+                mb: 1,
+                background: 'linear-gradient(135deg, #065f46 0%, #047857 50%, #10b981 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}
+            >
               Dashboard
             </Typography>
-            <Typography variant="body1" sx={{ mt: 0.5, color: 'var(--text-secondary)', fontFamily: 'var(--font-family)' }}>
-              Visão geral do sistema, indicadores e atividades recentes
+            <Typography variant="body1" sx={{ color: '#047857', mb: 4 }}>
+              Dados demonstrativos do sistema de vacinação
             </Typography>
           </Box>
-        </Stack>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => handleConfirmAction(() => window.location.reload())}
-          sx={{ fontWeight: 700, boxShadow: '0 2px 8px var(--shadow)', px: 4, py: 1.5, borderRadius: 2, fontFamily: 'var(--font-family)' }}
-          disabled={loading}
-        >
-          Atualizar
-        </Button>
-      </Box>
-      {/* Cards estatísticos */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {stats.map((stat, idx) => (
-          <Grid item xs={12} md={3} key={idx}>
-            <StatCard {...stat} />
+          <Button
+            variant="contained"
+            startIcon={<Refresh />}
+            onClick={loadDashboardData}
+            sx={{
+              backgroundColor: '#10b981',
+              '&:hover': { backgroundColor: '#047857' },
+              fontWeight: 600
+            }}
+          >
+            Atualizar
+          </Button>
+        </Box>
+
+        {/* Cards de Estatísticas */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'rgba(255, 255, 255, 0.95)', 
+              border: '1px solid #d9f99d',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(6, 95, 70, 0.1)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 12px 40px rgba(6, 95, 70, 0.15)'
+              }
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    p: 2, 
+                    borderRadius: 2, 
+                    backgroundColor: '#dcfce7',
+                    color: '#065f46'
+                  }}>
+                    <People fontSize="large" />
+                  </Box>
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: '#065f46' }}>
+                      {stats.totalPacientes}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#047857' }}>
+                      Pacientes
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
           </Grid>
-        ))}
-      </Grid>
-      {/* Tabela de atividades recentes */}
-      <RecentActivityTable activities={activities} />
-      <ConfirmationModal
-        open={confirmOpen}
-        onClose={handleCancel}
-        onConfirm={handleConfirm}
-        title="Confirmar ação"
-        description="Tem certeza que deseja executar esta ação?"
-      />
+          
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'rgba(255, 255, 255, 0.95)', 
+              border: '1px solid #d9f99d',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(6, 95, 70, 0.1)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 12px 40px rgba(6, 95, 70, 0.15)'
+              }
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    p: 2, 
+                    borderRadius: 2, 
+                    backgroundColor: '#dcfce7',
+                    color: '#065f46'
+                  }}>
+                    <Group fontSize="large" />
+                  </Box>
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: '#065f46' }}>
+                      {stats.totalFuncionarios}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#047857' }}>
+                      Funcionários
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'rgba(255, 255, 255, 0.95)', 
+              border: '1px solid #d9f99d',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(6, 95, 70, 0.1)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 12px 40px rgba(6, 95, 70, 0.15)'
+              }
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    p: 2, 
+                    borderRadius: 2, 
+                    backgroundColor: '#dcfce7',
+                    color: '#065f46'
+                  }}>
+                    <Vaccines fontSize="large" />
+                  </Box>
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: '#065f46' }}>
+                      {stats.totalVacinas}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#047857' }}>
+                      Tipos de Vacinas
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'rgba(255, 255, 255, 0.95)', 
+              border: '1px solid #d9f99d',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(6, 95, 70, 0.1)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 12px 40px rgba(6, 95, 70, 0.15)'
+              }
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ 
+                    p: 2, 
+                    borderRadius: 2, 
+                    backgroundColor: '#dcfce7',
+                    color: '#065f46'
+                  }}>
+                    <CalendarToday fontSize="large" />
+                  </Box>
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: '#065f46' }}>
+                      {stats.agendamentosHoje}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#047857' }}>
+                      Agendamentos Hoje
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+        {/* Gráficos */}
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={8}>
+            <Card sx={{ 
+              background: 'rgba(255, 255, 255, 0.95)', 
+              border: '1px solid #d9f99d',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(6, 95, 70, 0.1)'
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 3, color: '#065f46', fontWeight: 600 }}>
+                  Vacinações por Mês
+                </Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData.vacinacoesMes}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#d9f99d" />
+                    <XAxis dataKey="mes" stroke="#047857" />
+                    <YAxis stroke="#047857" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#f0fdf4', 
+                        border: '1px solid #10b981',
+                        borderRadius: '8px'
+                      }} 
+                    />
+                    <Bar dataKey="vacinas" fill="#10b981" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={12} md={4}>
+            <Card sx={{ 
+              background: 'rgba(255, 255, 255, 0.95)', 
+              border: '1px solid #d9f99d',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(6, 95, 70, 0.1)'
+            }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 3, color: '#065f46', fontWeight: 600 }}>
+                  Tipos de Vacinas (%)
+                </Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={chartData.tiposVacina}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      dataKey="valor"
+                      label={({ nome, valor }) => `${nome}: ${valor}%`}
+                    >
+                      {chartData.tiposVacina.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#f0fdf4', 
+                        border: '1px solid #10b981',
+                        borderRadius: '8px'
+                      }} 
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
     </Box>
   );
 }
-
-

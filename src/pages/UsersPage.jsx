@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Avatar, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-  Tabs, Tab, Snackbar, Alert, CircularProgress, useTheme, Chip, FormControlLabel, Switch, MenuItem, Select, InputLabel, FormControl, Tooltip, Divider, Grid, Fade, Stack
+  Tabs, Tab, Snackbar, Alert, CircularProgress, Chip, FormControlLabel, Switch, MenuItem, Select, InputLabel, FormControl, Tooltip, Divider, Grid, Fade, Stack, Container
 } from '@mui/material';
 import { Add, Edit, Delete, Visibility, Close, Save, Person, Email, Phone, Badge, CalendarMonth, Wc, Work } from '@mui/icons-material';
 import { WarningAmber } from '@mui/icons-material';
@@ -28,7 +28,7 @@ function UserForm({ open, onClose, onSubmit, initialData, isStaff }) {
   const handleSubmit = () => onSubmit(form);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 8px 32px rgba(34,197,94,0.18)', border: '1.5px solid #C7F2E6', background: theme => theme.palette.mode === 'dark' ? 'linear-gradient(120deg, #142D1F 0%, #1A3A2F 100%)' : 'linear-gradient(120deg, #F0FDF4 0%, #C7F2E6 100%)' } }}>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 8px 32px rgba(134, 239, 172, 0.18)', border: '1px solid #d9f99d', background: 'rgba(255, 255, 255, 0.95)' } }}>
       <DialogTitle sx={{ fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, bgcolor: theme => theme.palette.mode === 'dark' ? '#1A3A2F' : 'primary.main', color: theme => theme.palette.mode === 'dark' ? 'primary.light' : 'primary.contrastText', borderTopLeftRadius: 3, borderTopRightRadius: 3, minHeight: 70, boxShadow: '0 2px 8px rgba(34,197,94,0.10)' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Person sx={{ fontSize: 36, mr: 1 }} />
@@ -164,7 +164,6 @@ function UserDetailDialog({ open, user, onClose }) {
 export default function UsersPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
-  const theme = useTheme();
   const [tab, setTab] = useState(0);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -254,45 +253,119 @@ export default function UsersPage() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', background: theme.palette.mode === 'dark' ? 'linear-gradient(120deg, #0A1F12 0%, #0F2A18 100%)' : 'linear-gradient(120deg, #F0FDF4 0%, #ECFDF5 100%)', p: { xs: 1, md: 3 } }}>
-      {/* Cabeçalho com avatar e título */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 56, height: 56, fontWeight: 700, fontSize: 32 }}>U</Avatar>
-          <Box>
-            <Typography variant="h3" sx={{ fontWeight: 900, color: theme.palette.primary.main, letterSpacing: 0.5 }}>
-              Usuários do Sistema
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-              Gerencie pacientes e funcionários com facilidade e segurança
-            </Typography>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+      py: 4
+    }}>
+      <Container maxWidth="xl">
+        <Box sx={{ mb: 4 }}>
+          <Chip 
+            label="Gestão de Usuários" 
+            sx={{ 
+              mb: 2, 
+              fontWeight: 700,
+              backgroundColor: '#dcfce7',
+              color: '#065f46'
+            }} 
+          />
+          <Typography 
+            variant="h2" 
+            sx={{ 
+              fontWeight: 800, 
+              mb: 1,
+              background: 'linear-gradient(135deg, #065f46 0%, #047857 50%, #10b981 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}
+          >
+            Usuários do Sistema
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#047857', mb: 4 }}>
+            Gerencie pacientes e funcionários com facilidade e segurança
+          </Typography>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+            <Box />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <FormControlLabel 
+                control={<Switch checked={dense} onChange={(_, v) => setDense(v)} sx={{ '& .MuiSwitch-thumb': { backgroundColor: '#10b981' } }} />} 
+                label="Denso" 
+                sx={{ color: '#047857' }}
+              />
+              <Button 
+                variant="contained" 
+                startIcon={<Add />} 
+                onClick={handleAdd} 
+                sx={{
+                  backgroundColor: '#86efac',
+                  color: '#065f46',
+                  fontWeight: 600,
+                  px: 3,
+                  py: 1.5,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  boxShadow: '0 4px 12px rgba(134, 239, 172, 0.3)',
+                  '&:hover': {
+                    backgroundColor: '#6ee7b7',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 6px 16px rgba(134, 239, 172, 0.4)'
+                  },
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                Adicionar Novo
+              </Button>
+            </Box>
           </Box>
-        </Stack>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <FormControlLabel control={<Switch checked={dense} onChange={(_, v) => setDense(v)} />} label="Denso" />
-          <Button variant="contained" startIcon={<Add />} onClick={handleAdd} sx={{ borderRadius: 2, fontWeight: 700, px: 4, py: 1.5 }}>
-            Adicionar Novo
-          </Button>
         </Box>
-      </Box>
-      <Tabs value={tab} onChange={handleTabChange} sx={{ minHeight: 48, mb: 2 }}>
-        <Tab label="Pacientes" sx={{ fontWeight: 600, fontSize: '1rem' }} />
-        <Tab label="Funcionários" sx={{ fontWeight: 600, fontSize: '1rem' }} />
-      </Tabs>
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
-      ) : (
-        <Fade in timeout={600}>
-          <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 4px 32px 0 rgba(60,72,100,0.10)', background: theme.palette.mode === 'dark' ? '#10291A' : '#F7FFF9' }}>
+        <Tabs 
+          value={tab} 
+          onChange={handleTabChange} 
+          sx={{ 
+            minHeight: 48, 
+            mb: 3,
+            '& .MuiTab-root': {
+              fontWeight: 600,
+              fontSize: '1rem',
+              color: '#047857',
+              '&.Mui-selected': {
+                color: '#065f46'
+              }
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: '#10b981'
+            }
+          }}
+        >
+          <Tab label="Pacientes" />
+          <Tab label="Funcionários" />
+        </Tabs>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <CircularProgress sx={{ color: '#10b981' }} />
+          </Box>
+        ) : (
+          <Fade in timeout={600}>
+            <TableContainer 
+              component={Paper} 
+              sx={{ 
+                borderRadius: 3, 
+                boxShadow: '0 4px 12px rgba(134, 239, 172, 0.1)', 
+                background: 'rgba(255, 255, 255, 0.9)',
+                border: '1px solid #d9f99d'
+              }}
+            >
             <Table size={dense ? 'small' : 'medium'} aria-label="Tabela de usuários">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main }}>Nome</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main, display: { xs: 'none', md: 'table-cell' } }}>Email</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main, display: { xs: 'none', md: 'table-cell' } }}>CPF</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main, display: { xs: 'none', lg: 'table-cell' } }}>Data de Nascimento</TableCell>
-                  {tab === 1 && <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main, display: { xs: 'none', lg: 'table-cell' } }}>Cargo</TableCell>}
-                  <TableCell sx={{ fontWeight: 700, color: theme.palette.primary.main }}>Ações</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#065f46' }}>Nome</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#065f46', display: { xs: 'none', md: 'table-cell' } }}>Email</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#065f46', display: { xs: 'none', md: 'table-cell' } }}>CPF</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#065f46', display: { xs: 'none', lg: 'table-cell' } }}>Data de Nascimento</TableCell>
+                  {tab === 1 && <TableCell sx={{ fontWeight: 700, color: '#065f46', display: { xs: 'none', lg: 'table-cell' } }}>Cargo</TableCell>}
+                  <TableCell sx={{ fontWeight: 700, color: '#065f46' }}>Ações</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -313,9 +386,33 @@ export default function UsersPage() {
                     {tab === 1 && <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>{user.cargo}</TableCell>}
                     <TableCell>
                       <Stack direction="row" spacing={1}>
-                        <Tooltip title="Ver detalhes"><IconButton aria-label={`ver detalhes de ${user.nomeCompleto}`} onClick={() => { setSelected(user); setDetailOpen(true); }} color="info"><Visibility /></IconButton></Tooltip>
-                        <Tooltip title="Editar"><IconButton aria-label={`editar ${user.nomeCompleto}`} onClick={() => handleEdit(user)} color="primary"><Edit /></IconButton></Tooltip>
-                        <Tooltip title="Excluir"><IconButton aria-label={`excluir ${user.nomeCompleto}`} onClick={() => handleDelete(user)} color="error"><Delete /></IconButton></Tooltip>
+                        <Tooltip title="Ver detalhes">
+                          <IconButton 
+                            aria-label={`ver detalhes de ${user.nomeCompleto}`} 
+                            onClick={() => { setSelected(user); setDetailOpen(true); }} 
+                            sx={{ color: '#047857', '&:hover': { backgroundColor: '#f0fdf4' } }}
+                          >
+                            <Visibility />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Editar">
+                          <IconButton 
+                            aria-label={`editar ${user.nomeCompleto}`} 
+                            onClick={() => handleEdit(user)} 
+                            sx={{ color: '#10b981', '&:hover': { backgroundColor: '#f0fdf4' } }}
+                          >
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Excluir">
+                          <IconButton 
+                            aria-label={`excluir ${user.nomeCompleto}`} 
+                            onClick={() => handleDelete(user)} 
+                            sx={{ color: '#dc2626', '&:hover': { backgroundColor: '#fef2f2' } }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
                       </Stack>
                     </TableCell>
                   </TableRow>
@@ -327,9 +424,10 @@ export default function UsersPage() {
                 )}
               </TableBody>
             </Table>
-          </TableContainer>
-        </Fade>
-      )}
+            </TableContainer>
+          </Fade>
+        )}
+      </Container>
       <UserForm
         open={formOpen}
         onClose={() => {

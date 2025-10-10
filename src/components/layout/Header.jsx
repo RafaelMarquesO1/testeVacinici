@@ -1,10 +1,9 @@
 
 
 import React from 'react';
-import { AppBar, Toolbar, Box, Typography, Avatar, Stack, IconButton, Tooltip, Button, Menu, MenuItem, useTheme } from '@mui/material';
-import Logout from '@mui/icons-material/Logout';
-import ThemeToggle from '../ThemeToggle/ThemeToggle';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { AppBar, Toolbar, Box, Typography, Avatar, Stack, Tooltip, Button, Menu, MenuItem } from '@mui/material';
+import { Logout, Menu as MenuIcon } from '@mui/icons-material';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 
@@ -15,14 +14,9 @@ export default function Header({ user, onLogout }) {
   const open = Boolean(anchorEl);
   const location = useLocation();
   const navigate = useNavigate();
-  const theme = useTheme();
 
   // Menu de navegação baseado no cargo
   const menuItems = [
-    user?.cargo && /(admin|administrador)/i.test(user.cargo) && {
-      label: 'Controle Geral',
-      to: '/admin/controle',
-    },
     user?.cargo && /(admin|administrador)/i.test(user.cargo) && {
       label: 'Usuários',
       to: '/admin/usuarios',
@@ -30,6 +24,10 @@ export default function Header({ user, onLogout }) {
     user?.cargo?.toLowerCase().includes('enfermeir') && {
       label: 'Agendamentos',
       to: '/admin/agendamentos',
+    },
+    user?.tipoUsuario === 'Funcionario' && {
+      label: 'Carteirinha',
+      to: '/admin/carteirinha',
     },
   ].filter(Boolean);
 
@@ -46,22 +44,44 @@ export default function Header({ user, onLogout }) {
 
   return (
     <AppBar position="sticky" elevation={0} sx={{
-      bgcolor: theme.palette.mode === 'dark' ? '#18181b' : '#f7fafc',
-      color: theme.palette.mode === 'dark' ? '#fff' : '#222',
-      borderBottom: theme.palette.mode === 'dark' ? '1px solid #232329' : '1px solid #e0e0e0',
-      boxShadow: '0 2px 8px 0 rgba(42,157,143,0.04)',
+      bgcolor: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(12px)',
+      color: '#065f46',
+      borderBottom: '1px solid #d9f99d',
+      boxShadow: '0 4px 12px rgba(134, 239, 172, 0.1)',
     }}>
-      <Toolbar sx={{ minHeight: 72, display: 'flex', justifyContent: 'space-between', px: { xs: 1, md: 3 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: 0.5, color: theme.palette.primary.main }}>
+      <Toolbar sx={{ minHeight: 72, display: 'flex', justifyContent: 'space-between', px: { xs: 2, md: 4 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              fontWeight: 800, 
+              letterSpacing: '-0.5px',
+              background: 'linear-gradient(135deg, #065f46 0%, #047857 50%, #10b981 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}
+          >
             Vacinici
           </Typography>
           {menuItems.length > 0 && (
             <>
               <Button
-                color="inherit"
                 onClick={handleMenu}
-                sx={{ ml: 2, fontWeight: 700, textTransform: 'none', bgcolor: theme.palette.mode === 'dark' ? '#232329' : '#e0f7fa', borderRadius: 2, fontSize: 17, px: 3 }}
+                startIcon={<MenuIcon />}
+                sx={{ 
+                  fontWeight: 600, 
+                  textTransform: 'none', 
+                  backgroundColor: '#dcfce7',
+                  color: '#065f46',
+                  borderRadius: 2, 
+                  px: 3,
+                  py: 1,
+                  '&:hover': {
+                    backgroundColor: '#bbf7d0'
+                  }
+                }}
               >
                 Menu
               </Button>
@@ -71,14 +91,34 @@ export default function Header({ user, onLogout }) {
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                PaperProps={{ sx: { bgcolor: theme.palette.mode === 'dark' ? '#232329' : '#fff', color: theme.palette.mode === 'dark' ? '#fff' : '#222', borderRadius: 2, minWidth: 180 } }}
+                PaperProps={{ 
+                  sx: { 
+                    bgcolor: 'rgba(255, 255, 255, 0.95)', 
+                    backdropFilter: 'blur(12px)',
+                    color: '#065f46', 
+                    borderRadius: 2, 
+                    minWidth: 180,
+                    border: '1px solid #d9f99d',
+                    boxShadow: '0 4px 12px rgba(134, 239, 172, 0.2)'
+                  } 
+                }}
               >
                 {menuItems.map((item) => (
                   <MenuItem
                     key={item.to}
                     selected={location.pathname === item.to}
                     onClick={() => handleNavigate(item.to)}
-                    sx={{ fontWeight: 600, fontSize: 16, borderRadius: 1.5, my: 0.5, color: location.pathname === item.to ? theme.palette.primary.main : undefined }}
+                    sx={{ 
+                      fontWeight: 600, 
+                      borderRadius: 1.5, 
+                      my: 0.5,
+                      mx: 1,
+                      color: location.pathname === item.to ? '#10b981' : '#047857',
+                      backgroundColor: location.pathname === item.to ? '#f0fdf4' : 'transparent',
+                      '&:hover': {
+                        backgroundColor: '#f0fdf4'
+                      }
+                    }}
                   >
                     {item.label}
                   </MenuItem>
@@ -87,21 +127,45 @@ export default function Header({ user, onLogout }) {
             </>
           )}
         </Box>
-        <Stack direction="row" spacing={2} alignItems="center">
-          <ThemeToggle />
-          <Box sx={{ textAlign: 'right', minWidth: 90 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: 16 }}>Bem-vindo(a), <strong>{userName}</strong></Typography>
+        <Stack direction="row" spacing={3} alignItems="center">
+          <Box sx={{ textAlign: 'right', minWidth: 120 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#065f46' }}>
+              Olá, <strong>{userName}</strong>
+            </Typography>
             {userRole && (
-              <Typography variant="caption" color="text.secondary">{userRole}</Typography>
+              <Typography variant="caption" sx={{ color: '#047857' }}>{userRole}</Typography>
             )}
           </Box>
           <Tooltip title={user?.nomeCompleto || 'Usuário'}>
-            <Avatar sx={{ width: 44, height: 44, bgcolor: theme.palette.primary.main, fontWeight: 700, fontSize: 22 }} src={user?.fotoPerfil}>
+            <Avatar sx={{ 
+              width: 48, 
+              height: 48, 
+              bgcolor: '#10b981', 
+              fontWeight: 700, 
+              fontSize: 20,
+              border: '2px solid #d9f99d'
+            }} src={user?.fotoPerfil}>
               {user?.nomeCompleto?.[0]?.toUpperCase() || 'U'}
             </Avatar>
           </Tooltip>
-          <Button onClick={onLogout} variant="outlined" color="error" size="medium" startIcon={<Logout />}
-            sx={{ borderRadius: 2, fontWeight: 700, fontSize: 15, px: 2 }}>
+          <Button 
+            onClick={onLogout} 
+            variant="outlined" 
+            startIcon={<Logout />}
+            sx={{ 
+              borderRadius: 2, 
+              fontWeight: 600, 
+              px: 3,
+              py: 1,
+              borderColor: '#dc2626',
+              color: '#dc2626',
+              textTransform: 'none',
+              '&:hover': {
+                borderColor: '#b91c1c',
+                backgroundColor: '#fef2f2'
+              }
+            }}
+          >
             Sair
           </Button>
         </Stack>
