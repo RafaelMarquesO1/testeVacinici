@@ -13,12 +13,17 @@ export default function Sidebar({ handleLogout }) {
   const [open, setOpen] = useState(false);
 
   const menuItems = [
-    currentUser?.cargo && /(admin|administrador)/i.test(currentUser.cargo) && {
+    currentUser?.tipoUsuario === 'Administrador' && {
+      label: 'Dashboard Admin',
+      to: '/admin/admin-dashboard',
+      icon: <RxDashboard size={28} />,
+    },
+    currentUser?.cargo && /(admin|administrador)/i.test(currentUser.cargo) && currentUser?.tipoUsuario !== 'Administrador' && {
       label: 'Controle Geral',
       to: '/admin/controle',
       icon: <FiBarChart2 size={28} />,
     },
-    currentUser?.cargo && /(admin|administrador)/i.test(currentUser.cargo) && {
+    currentUser?.cargo && /(admin|administrador)/i.test(currentUser.cargo) && currentUser?.tipoUsuario !== 'Administrador' && {
       label: 'Usuários',
       to: '/admin/usuarios',
       icon: <FiUsers size={28} />,

@@ -1,18 +1,6 @@
 import React from "react";
-import { useAuth } from './contexts/AuthContext';
-// Componente para redirecionar admin/enfermeiro corretamente
-function AdminRedirect() {
-  const { currentUser } = useAuth();
-  if (currentUser?.tipoUsuario === 'Funcionario' && currentUser?.cargo?.toLowerCase().includes('enfermeir')) {
-    return <Navigate to="agendamentos" replace />;
-  } else if (currentUser?.tipoUsuario === 'Funcionario' && currentUser?.cargo?.toLowerCase().includes('admin')) {
-    return <Navigate to="usuarios" replace />;
-  } else {
-    return <Navigate to="/entrar" replace />;
-  }
-}
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 // Seus componentes e páginas
 import Navbar from "./components/Navbar/Navbar";
@@ -22,12 +10,28 @@ import Politica from "./components/Politica/Politica";
 import Login from "./components/Login/Login"; 
 import DashboardLayout from "./components/layout/DashboardLayout"; 
 import ProtectedRoute from "./components/ProtectedRoute"; 
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import DashboardPage from "./pages/DashboardPage"; 
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 import UsersPage from "./pages/UsersPage";
 import AgendamentosPage from "./pages/AgendamentosPage";
 import AdminOverviewPage from "./pages/AdminOverviewPage";
 import CarteirinhaPage from "./pages/CarteirinhaPage";
 import MobileAgendamentosPage from "./pages/MobileAgendamentosPage";
+
+// Componente para redirecionar admin/enfermeiro corretamente
+function AdminRedirect() {
+  const { currentUser } = useAuth();
+  if (currentUser?.tipoUsuario === 'Administrador') {
+    return <Navigate to="admin-dashboard" replace />;
+  } else if (currentUser?.tipoUsuario === 'Funcionario' && currentUser?.cargo?.toLowerCase().includes('enfermeir')) {
+    return <Navigate to="agendamentos" replace />;
+  } else if (currentUser?.tipoUsuario === 'Funcionario' && currentUser?.cargo?.toLowerCase().includes('admin')) {
+    return <Navigate to="usuarios" replace />;
+  } else {
+    return <Navigate to="/entrar" replace />;
+  }
+}
 
 const PublicLayout = ({ children }) => (
   <div>
@@ -60,6 +64,10 @@ function App() {
         >
           {/* Redirecionamento inteligente para admin ou enfermeiro */}
           <Route index element={<AdminRedirect />} />
+          {/* Dashboard exclusivo para administradores */}
+          <Route path="admin-dashboard" element={<AdminProtectedRoute><AdminDashboardPage /></AdminProtectedRoute>} />
+          {/* Dashboard para funcionários */}
+          <Route path="dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           {/* Apenas admin pode acessar usuários */}
           <Route path="usuarios" element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
           {/* Apenas enfermeiro pode acessar agendamentos */}

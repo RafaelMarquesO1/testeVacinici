@@ -20,8 +20,9 @@ CREATE TABLE usuarios (
   cpf NVARCHAR(20) UNIQUE NOT NULL,
   data_nascimento DATE,
   genero NVARCHAR(20),
-  tipo_usuario NVARCHAR(20) NOT NULL, -- 'Paciente' ou 'Funcionario'
-  cargo NVARCHAR(50), -- Para funcionários
+  tipo_usuario NVARCHAR(20) NOT NULL, -- 'Paciente', 'Funcionario', 'Administrador'
+  cargo NVARCHAR(50), -- Para funcionários: 'Enfermeiro', 'Médico', 'Técnico em Enfermagem', 'Administrador'
+  nivel_permissao INT DEFAULT 1, -- 1=Paciente, 2=Técnico, 3=Enfermeiro, 4=Médico, 5=Administrador
   foto_perfil NVARCHAR(255),
   data_cadastro DATETIME2 DEFAULT GETDATE(),
   senha NVARCHAR(255) NOT NULL
@@ -56,6 +57,21 @@ CREATE TABLE locais_vacinacao (
   tipo NVARCHAR(50) -- posto de saúde, hospital, clínica
 );
 
+-- Tabela de Agendamentos
+CREATE TABLE agendamentos (
+  id BIGINT IDENTITY(1,1) PRIMARY KEY,
+  paciente_id BIGINT NOT NULL,
+  vacina_id BIGINT NOT NULL,
+  local_id BIGINT NOT NULL,
+  data_agendamento DATETIME2 NOT NULL,
+  status NVARCHAR(20) DEFAULT 'Agendado', -- 'Agendado', 'Confirmado', 'Cancelado', 'Faltou'
+  data_criacao DATETIME2 DEFAULT GETDATE(),
+  motivo_cancelamento NVARCHAR(255),
+  FOREIGN KEY (paciente_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  FOREIGN KEY (vacina_id) REFERENCES vacinas(id),
+  FOREIGN KEY (local_id) REFERENCES locais_vacinacao(id)
+);
+
 -- Tabela de Histórico de Vacinação
 CREATE TABLE historico_vacinacao (
   id BIGINT IDENTITY(1,1) PRIMARY KEY,
@@ -86,10 +102,12 @@ CREATE TABLE logs (
 );
 
 -- Dados de teste
-INSERT INTO usuarios (nome_completo, email, telefone, cpf, data_nascimento, tipo_usuario, cargo, senha) VALUES
-('James Moraes', 'jamesmoraes@gmail.com', '11987654321', '111.222.333-44', '1992-08-25', 'Paciente', NULL, 'james123456'), -- password
-('Maria Silva', 'maria.silva@ubs.gov.br', '11987654322', '101.101.101-01', '1980-05-10', 'Funcionario', 'Enfermeira', 'admin123456'),
-('Stephanie Santos', 'stephanie.santos@ubs.gov.br', '11987654323', '102.102.102-02', '1985-09-15', 'Funcionario', 'Enfermeira', 'Santos44444');
+INSERT INTO usuarios (nome_completo, email, telefone, cpf, data_nascimento, tipo_usuario, cargo, nivel_permissao, senha) VALUES
+('James Moraes', 'jamesmoraes@gmail.com', '11987654321', '111.222.333-44', '1992-08-25', 'Paciente', NULL, 1, 'james123456'),
+('Maria Silva', 'maria.silva@ubs.gov.br', '11987654322', '101.101.101-01', '1980-05-10', 'Funcionario', 'Enfermeiro', 3, 'admin123456'),
+('Stephanie Santos', 'stephanie.santos@ubs.gov.br', '11987654323', '102.102.102-02', '1985-09-15', 'Funcionario', 'Enfermeiro', 3, 'Santos44444'),
+('Dr. Carlos Mendes', 'carlos.mendes@ubs.gov.br', '11987654324', '103.103.103-03', '1975-03-20', 'Funcionario', 'Médico', 4, 'medico123'),
+('Admin Sistema', 'admin@vacinici.com', '11987654325', '104.104.104-04', '1970-01-01', 'Administrador', 'Administrador', 5, 'admin123');
 
 INSERT INTO vacinas (nome, fabricante, descricao, doses_recomendadas, categoria) VALUES
 ('COVID-19', 'Pfizer', 'Vacina contra o coronavírus', 2, 'obrigatória'),
@@ -103,6 +121,11 @@ INSERT INTO locais_vacinacao (nome, endereco, cidade, estado, tipo, telefone) VA
 ('UBS Central', 'Av. Principal, 123', 'São Paulo', 'SP', 'posto de saúde', '1134567890'),
 ('Hospital Municipal', 'Rua da Saúde, 456', 'Rio de Janeiro', 'RJ', 'hospital', '2123456789'),
 ('Clínica Vacina Fácil', 'Rua Comercial, 789', 'Belo Horizonte', 'MG', 'clínica', '3134567890');
+
+-- Dados de agendamentos de teste
+INSERT INTO agendamentos (paciente_id, vacina_id, local_id, data_agendamento, status) VALUES
+(1, 1, 1, '2024-12-20 09:00:00', 'Agendado'),
+(1, 2, 2, '2024-12-22 14:30:00', 'Confirmado');
 
 INSERT INTO historico_vacinacao (paciente_id, funcionario_id, vacina_id, dose, data_aplicacao, lote, local_id) VALUES
 (1, 2, 5, 'Dose Única', '1992-08-25', 'BCG92A', 1),

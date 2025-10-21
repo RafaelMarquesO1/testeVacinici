@@ -36,13 +36,14 @@ export const AuthProvider = ({ children }) => {
       
       console.log('AuthContext: Resposta da API:', response);
       
-      // A resposta da API Spring Boot tem token, id, email, nomeCompleto, tipoUsuario, cargo
+      // A resposta da API Spring Boot tem token, id, email, nomeCompleto, tipoUsuario, cargo, nivelPermissao
       const userData = {
         id: response.id,
         email: response.email,
         nomeCompleto: response.nomeCompleto,
         tipoUsuario: response.tipoUsuario,
-        cargo: response.cargo
+        cargo: response.cargo,
+        nivelPermissao: response.nivelPermissao || 1
       };
       
       console.log('Dados do usuário:', userData);

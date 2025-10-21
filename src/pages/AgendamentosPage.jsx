@@ -17,7 +17,6 @@ import { AuthContext } from '../contexts/AuthContext';
 const statusColors = {
   'Agendado': 'primary',
   'Confirmado': 'success',
-  'Realizado': 'info',
   'Cancelado': 'error',
   'Faltou': 'warning'
 };
@@ -25,7 +24,6 @@ const statusColors = {
 const statusOptions = [
   { value: 'Agendado', label: 'Agendado' },
   { value: 'Confirmado', label: 'Confirmado' },
-  { value: 'Realizado', label: 'Realizado' },
   { value: 'Cancelado', label: 'Cancelado' },
   { value: 'Faltou', label: 'Faltou' }
 ];
@@ -197,12 +195,7 @@ export default function AgendamentosPage() {
       await api.updateAgendamentoStatus(selectedAgendamento.id, newStatus, selectedAgendamento.dose);
       await loadAgendamentos();
       setEditDialogOpen(false);
-      
-      if (newStatus === 'realizado') {
-        showSnackbar('Vacina aplicada e registrada no histórico!', 'success');
-      } else {
-        showSnackbar('Status atualizado com sucesso', 'success');
-      }
+      showSnackbar('Status atualizado com sucesso', 'success');
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
       showSnackbar('Erro ao atualizar status', 'error');
@@ -524,32 +517,30 @@ export default function AgendamentosPage() {
                             <Cancel />
                           </IconButton>
                         </Tooltip>
-                        {currentUser?.tipoUsuario === 'Funcionario' && currentUser?.cargo?.toLowerCase().includes('enfermeir') && (
-                          <Tooltip title="Aplicar Vacina">
-                            <Button
-                              variant="contained"
-                              size="small"
-                              startIcon={<Vaccines />}
-                              onClick={() => handleRegisterVaccination(agendamento)}
-                              sx={{
-                                bgcolor: '#10b981',
-                                color: 'white',
-                                fontWeight: 600,
-                                borderRadius: 2,
-                                px: 2,
-                                textTransform: 'none',
-                                '&:hover': {
-                                  bgcolor: '#047857',
-                                  transform: 'translateY(-2px)',
-                                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-                                },
-                                transition: 'all 0.2s ease',
-                              }}
-                            >
-                              Aplicar
-                            </Button>
-                          </Tooltip>
-                        )}
+                        <Tooltip title="Aplicar Vacina">
+                          <Button
+                            variant="contained"
+                            size="small"
+                            startIcon={<Vaccines />}
+                            onClick={() => handleRegisterVaccination(agendamento)}
+                            sx={{
+                              bgcolor: '#10b981',
+                              color: 'white',
+                              fontWeight: 600,
+                              borderRadius: 2,
+                              px: 2,
+                              textTransform: 'none',
+                              '&:hover': {
+                                bgcolor: '#047857',
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                              },
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            Aplicar
+                          </Button>
+                        </Tooltip>
                       </Stack>
                     </TableCell>
                   </TableRow>

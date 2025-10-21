@@ -51,7 +51,9 @@ export default function CarteirinhaPage() {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('pt-BR');
+    // Corrigir timezone para evitar erro de data (um dia a menos)
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString('pt-BR');
   };
 
   const calcularIdade = (dataNascimento) => {
