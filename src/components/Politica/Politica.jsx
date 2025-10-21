@@ -1,7 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./Politica.css";
 
 export default function Politica() {
+  const navigate = useNavigate();
+
+  const handleVoltar = () => {
+    navigate(-1); // Volta para a página anterior
+  };
+
   return (
     <div className="politica-container">
       <div className="politica-box">
@@ -67,7 +74,7 @@ export default function Politica() {
         </p>
 
 
-        <a href="/Bottom" className="politica-button">Voltar</a>
+        <button onClick={handleVoltar} className="politica-button">Voltar</button>
       </div>
     </div>
   );

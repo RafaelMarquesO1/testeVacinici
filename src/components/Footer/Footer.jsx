@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, Link, IconButton, Stack, useTheme } from '@mui/material';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
-import TwitterIcon from '@mui/icons-material/Twitter';
+import XIcon from '@mui/icons-material/X';
 
 const Footer = () => {
   const theme = useTheme();
@@ -53,7 +53,7 @@ const Footer = () => {
               <FacebookIcon />
             </IconButton>
             <IconButton href="https://twitter.com" target="_blank" color="primary" sx={{ bgcolor: isDark ? 'background.paper' : '#fff', borderRadius: 2 }}>
-              <TwitterIcon />
+              <XIcon />
             </IconButton>
           </Stack>
         </Box>

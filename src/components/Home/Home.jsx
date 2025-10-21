@@ -198,7 +198,7 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Box>
                 <Button 
                   href="/entrar" 
                   variant="contained" 
@@ -222,31 +222,6 @@ const Home = () => {
                   }}
                 >
                   Começar agora
-                </Button>
-                <Button 
-                  href="#sobre" 
-                  variant="outlined" 
-                  size="large"
-                  sx={{
-                    borderColor: '#86efac',
-                    color: '#065f46',
-                    fontWeight: 600,
-                    px: 3,
-                    py: 1.5,
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontSize: '1rem',
-                    borderWidth: '2px',
-                    '&:hover': { 
-                      borderColor: '#6ee7b7',
-                      backgroundColor: 'rgba(134, 239, 172, 0.1)',
-                      transform: 'translateY(-2px)',
-                      borderWidth: '2px'
-                    },
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  Saiba mais
                 </Button>
               </Box>
             </motion.div>
